@@ -11,7 +11,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BoosterShopGUI {
 
@@ -25,7 +27,7 @@ public class BoosterShopGUI {
     public BoosterShopGUI(GlobalBoosters plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
-        this.inventory = Bukkit.createInventory(null, 36, "§6§lBooster Shop");
+        this.inventory = Bukkit.createInventory(null, 36, plugin.getMessagesManager().getMessage("shop.title"));
 
         setupGUI();
     }
@@ -54,13 +56,19 @@ public class BoosterShopGUI {
         int duration = plugin.getConfigManager().getBoosterDuration(type);
         boolean isActive = plugin.getBoosterManager().isBoosterActive(type);
 
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%multiplier%", String.valueOf(type.getMultiplier()));
+        placeholders.put("%duration%", String.valueOf(duration));
+        placeholders.put("%price%", String.format("%.2f", price));
+
         List<String> lore = Arrays.asList(
                 "",
-                "§7Multiplier: §e" + type.getMultiplier() + "x",
-                "§7Duration: §e" + duration + " minutes",
-                "§7Price: §6$" + String.format("%.2f", price),
+                plugin.getMessagesManager().getMessage("shop.item-lore.multiplier", placeholders),
+                plugin.getMessagesManager().getMessage("shop.item-lore.duration", placeholders),
+                plugin.getMessagesManager().getMessage("shop.item-lore.price", placeholders),
                 "",
-                isActive ? "§c§lALREADY ACTIVE" : "§e§lCLICK TO PURCHASE"
+                isActive ? plugin.getMessagesManager().getMessage("shop.item-lore.already-active")
+                        : plugin.getMessagesManager().getMessage("shop.item-lore.click-to-purchase")
         );
 
         return new ItemBuilder(type.getIcon())
@@ -91,7 +99,7 @@ public class BoosterShopGUI {
         BoosterType type = BoosterType.values()[boosterIndex];
 
         if (plugin.getBoosterManager().isBoosterActive(type)) {
-            player.sendMessage("§cThis booster is already active!");
+            player.sendMessage(plugin.getMessagesManager().getMessage("booster.already-active"));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -99,7 +107,9 @@ public class BoosterShopGUI {
         double price = plugin.getConfigManager().getBoosterPrice(type);
 
         if (!plugin.getEconomy().has(player, price)) {
-            player.sendMessage("§cYou don't have enough money! You need $" + String.format("%.2f", price));
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("%price%", String.format("%.2f", price));
+            player.sendMessage(plugin.getMessagesManager().getMessage("purchase.not-enough-money", placeholders));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }

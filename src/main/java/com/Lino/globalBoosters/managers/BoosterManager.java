@@ -22,7 +22,7 @@ public class BoosterManager {
 
     public boolean activateBooster(BoosterType type, Player activator, int durationMinutes) {
         if (isBoosterActive(type)) {
-            activator.sendMessage("§cThis booster type is already active!");
+            activator.sendMessage(plugin.getMessagesManager().getMessage("booster.already-active"));
             return false;
         }
 
@@ -96,13 +96,22 @@ public class BoosterManager {
     }
 
     private void announceBoosterActivation(BoosterType type, String activatorName, int durationMinutes) {
-        String message = String.format("§6§l[BOOSTER] §e%s §ahas activated §e%s §afor §e%d minutes§a!",
-                activatorName, type.getDisplayName(), durationMinutes);
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%prefix%", plugin.getMessagesManager().getPrefix());
+        placeholders.put("%player%", activatorName);
+        placeholders.put("%booster%", type.getDisplayName());
+        placeholders.put("%duration%", String.valueOf(durationMinutes));
+
+        String message = plugin.getMessagesManager().getMessage("booster.activated", placeholders);
         Bukkit.broadcastMessage(message);
     }
 
     private void announceBoosterDeactivation(BoosterType type) {
-        String message = String.format("§6§l[BOOSTER] §e%s §chas expired!", type.getDisplayName());
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%prefix%", plugin.getMessagesManager().getPrefix());
+        placeholders.put("%booster%", type.getDisplayName());
+
+        String message = plugin.getMessagesManager().getMessage("booster.expired", placeholders);
         Bukkit.broadcastMessage(message);
     }
 

@@ -18,14 +18,14 @@ public class BoostShopCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§cThis command can only be used by players!");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("general.player-only"));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("globalboosters.shop")) {
-            player.sendMessage("§cYou don't have permission to use this command!");
+            player.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
             return true;
         }
 

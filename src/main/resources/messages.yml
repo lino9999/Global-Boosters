@@ -1,0 +1,66 @@
+prefix: "&6&l[BOOSTER] "
+
+general:
+  no-permission: "&cYou don't have permission to use this command!"
+  player-only: "&cThis command can only be used by players!"
+  no-permission-use: "&cYou don't have permission to use boosters!"
+  reload-success: "&aConfiguration and messages reloaded successfully!"
+
+shop:
+  title: "&6&lBooster Shop"
+  confirm-title: "&6Confirm Purchase"
+  item-lore:
+    multiplier: "&7Multiplier: &e%multiplier%x"
+    duration: "&7Duration: &e%duration% minutes"
+    price: "&7Price: &6$%price%"
+    already-active: "&c&lALREADY ACTIVE"
+    click-to-purchase: "&e&lCLICK TO PURCHASE"
+  confirm:
+    button: "&a&lCONFIRM PURCHASE"
+    cancel: "&c&lCANCEL"
+    lore-booster: "&7Booster: &e%booster%"
+    lore-price: "&7Price: &6$%price%"
+    click-confirm: "&aClick to purchase!"
+    click-cancel: "&cClick to cancel!"
+    return-shop: "&7Return to shop"
+    info-title: "&6%booster%"
+    info-lore:
+      line1: "&7This booster will be added"
+      line2: "&7to your inventory as an item."
+      line3: ""
+      line4: "&7Right-click the item to"
+      line5: "&7activate the global booster!"
+
+purchase:
+  not-enough-money: "&cYou don't have enough money! You need $%price%"
+  success: "&aSuccessfully purchased %booster% for $%price%"
+  inventory-full: "&eYour inventory was full! The booster has been dropped on the ground."
+
+booster:
+  already-active: "&cThis booster type is already active!"
+  activated: "%prefix%&e%player% &ahas activated &e%booster% &afor &e%duration% minutes&a!"
+  expired: "%prefix%&e%booster% &chas expired!"
+  item-name: "&6&l%booster%"
+  item-lore:
+    line1: ""
+    line2: "&7A magical booster that enhances"
+    line3: "&7server-wide activities!"
+    line4: ""
+    multiplier: "&eMultiplier: &f%multiplier%x"
+    duration: "&eDuration: &f%duration% minutes"
+    line5: ""
+    effects: "&7Effects:"
+    activate: "&a&lRIGHT-CLICK TO ACTIVATE"
+
+bossbar:
+  format: "&e%booster% &7- &a%time% &7sponsored by &b%player%"
+
+effects:
+  plant_growth: "&7• &fDoubles crop growth speed"
+  spawner_rate: "&7• &fDoubles spawner spawn rate"
+  exp_multiplier: "&7• &fDoubles experience gained"
+  mob_drop: "&7• &fDoubles mob drops"
+  mining_speed: "&7• &fIncreases mining speed"
+  fishing_luck: "&7• &fDoubles fishing rewards"
+  farming_fortune: "&7• &fDoubles crop drops"
+  combat_damage: "&7• &fIncreases combat damage"

@@ -1,5 +1,6 @@
 package com.Lino.globalBoosters.items;
 
+import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
 import com.Lino.globalBoosters.utils.ItemBuilder;
 import org.bukkit.NamespacedKey;
@@ -9,6 +10,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BoosterItem {
 
@@ -16,20 +19,26 @@ public class BoosterItem {
     public static final NamespacedKey BOOSTER_DURATION_KEY = new NamespacedKey("globalboosters", "booster_duration");
 
     public static ItemStack createBoosterItem(BoosterType type, int durationMinutes) {
+        GlobalBoosters plugin = GlobalBoosters.getInstance();
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%booster%", type.getDisplayName());
+        placeholders.put("%multiplier%", String.valueOf(type.getMultiplier()));
+        placeholders.put("%duration%", String.valueOf(durationMinutes));
+
         ItemStack item = new ItemBuilder(type.getIcon())
-                .setDisplayName("§6§l" + type.getDisplayName())
+                .setDisplayName(plugin.getMessagesManager().getMessage("booster.item-name", placeholders))
                 .setLore(Arrays.asList(
-                        "",
-                        "§7A magical booster that enhances",
-                        "§7server-wide activities!",
-                        "",
-                        "§eMultiplier: §f" + type.getMultiplier() + "x",
-                        "§eDuration: §f" + durationMinutes + " minutes",
-                        "",
-                        "§7Effects:",
+                        plugin.getMessagesManager().getMessage("booster.item-lore.line1"),
+                        plugin.getMessagesManager().getMessage("booster.item-lore.line2"),
+                        plugin.getMessagesManager().getMessage("booster.item-lore.line3"),
+                        plugin.getMessagesManager().getMessage("booster.item-lore.line4"),
+                        plugin.getMessagesManager().getMessage("booster.item-lore.multiplier", placeholders),
+                        plugin.getMessagesManager().getMessage("booster.item-lore.duration", placeholders),
+                        plugin.getMessagesManager().getMessage("booster.item-lore.line5"),
+                        plugin.getMessagesManager().getMessage("booster.item-lore.effects"),
                         getEffectDescription(type),
                         "",
-                        "§a§lRIGHT-CLICK TO ACTIVATE"
+                        plugin.getMessagesManager().getMessage("booster.item-lore.activate")
                 ))
                 .addGlow(true)
                 .build();
@@ -80,25 +89,7 @@ public class BoosterItem {
     }
 
     private static String getEffectDescription(BoosterType type) {
-        switch (type) {
-            case PLANT_GROWTH:
-                return "§7• §fDoubles crop growth speed";
-            case SPAWNER_RATE:
-                return "§7• §fDoubles spawner spawn rate";
-            case EXP_MULTIPLIER:
-                return "§7• §fDoubles experience gained";
-            case MOB_DROP:
-                return "§7• §fDoubles mob drops";
-            case MINING_SPEED:
-                return "§7• §fIncreases mining speed";
-            case FISHING_LUCK:
-                return "§7• §fDoubles fishing rewards";
-            case FARMING_FORTUNE:
-                return "§7• §fDoubles crop drops";
-            case COMBAT_DAMAGE:
-                return "§7• §fIncreases combat damage";
-            default:
-                return "§7• §fEnhances server activities";
-        }
+        GlobalBoosters plugin = GlobalBoosters.getInstance();
+        return plugin.getMessagesManager().getMessage("effects." + type.name().toLowerCase());
     }
 }

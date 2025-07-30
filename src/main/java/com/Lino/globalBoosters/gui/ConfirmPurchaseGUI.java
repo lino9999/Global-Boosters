@@ -12,6 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfirmPurchaseGUI {
 
@@ -26,7 +28,7 @@ public class ConfirmPurchaseGUI {
         this.player = player;
         this.boosterType = boosterType;
         this.price = price;
-        this.inventory = Bukkit.createInventory(null, 27, "§6Confirm Purchase");
+        this.inventory = Bukkit.createInventory(null, 27, plugin.getMessagesManager().getMessage("shop.confirm-title"));
 
         setupGUI();
     }
@@ -40,36 +42,40 @@ public class ConfirmPurchaseGUI {
             inventory.setItem(i, grayGlass);
         }
 
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%booster%", boosterType.getDisplayName());
+        placeholders.put("%price%", String.format("%.2f", price));
+
         ItemStack confirmItem = new ItemBuilder(Material.LIME_WOOL)
-                .setDisplayName("§a§lCONFIRM PURCHASE")
+                .setDisplayName(plugin.getMessagesManager().getMessage("shop.confirm.button"))
                 .setLore(Arrays.asList(
                         "",
-                        "§7Booster: §e" + boosterType.getDisplayName(),
-                        "§7Price: §6$" + String.format("%.2f", price),
+                        plugin.getMessagesManager().getMessage("shop.confirm.lore-booster", placeholders),
+                        plugin.getMessagesManager().getMessage("shop.confirm.lore-price", placeholders),
                         "",
-                        "§aClick to purchase!"
+                        plugin.getMessagesManager().getMessage("shop.confirm.click-confirm")
                 ))
                 .build();
 
         ItemStack cancelItem = new ItemBuilder(Material.RED_WOOL)
-                .setDisplayName("§c§lCANCEL")
+                .setDisplayName(plugin.getMessagesManager().getMessage("shop.confirm.cancel"))
                 .setLore(Arrays.asList(
                         "",
-                        "§7Return to shop",
+                        plugin.getMessagesManager().getMessage("shop.confirm.return-shop"),
                         "",
-                        "§cClick to cancel!"
+                        plugin.getMessagesManager().getMessage("shop.confirm.click-cancel")
                 ))
                 .build();
 
         ItemStack infoItem = new ItemBuilder(boosterType.getIcon())
-                .setDisplayName("§6" + boosterType.getDisplayName())
+                .setDisplayName(plugin.getMessagesManager().getMessage("shop.confirm.info-title", placeholders))
                 .setLore(Arrays.asList(
                         "",
-                        "§7This booster will be added",
-                        "§7to your inventory as an item.",
-                        "",
-                        "§7Right-click the item to",
-                        "§7activate the global booster!"
+                        plugin.getMessagesManager().getMessage("shop.confirm.info-lore.line1"),
+                        plugin.getMessagesManager().getMessage("shop.confirm.info-lore.line2"),
+                        plugin.getMessagesManager().getMessage("shop.confirm.info-lore.line3"),
+                        plugin.getMessagesManager().getMessage("shop.confirm.info-lore.line4"),
+                        plugin.getMessagesManager().getMessage("shop.confirm.info-lore.line5")
                 ))
                 .addGlow(true)
                 .build();
@@ -94,7 +100,8 @@ public class ConfirmPurchaseGUI {
 
     private void purchaseBooster() {
         if (!plugin.getEconomy().has(player, price)) {
-            player.sendMessage("§cYou don't have enough money!");
+            player.sendMessage(plugin.getMessagesManager().getMessage("purchase.not-enough-money",
+                    new HashMap<String, String>() {{ put("%price%", String.format("%.2f", price)); }}));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             player.closeInventory();
             return;
@@ -109,12 +116,16 @@ public class ConfirmPurchaseGUI {
 
         if (player.getInventory().firstEmpty() == -1) {
             player.getWorld().dropItem(player.getLocation(), boosterItem);
-            player.sendMessage("§eYour inventory was full! The booster has been dropped on the ground.");
+            player.sendMessage(plugin.getMessagesManager().getMessage("purchase.inventory-full"));
         } else {
             player.getInventory().addItem(boosterItem);
         }
 
-        player.sendMessage("§aSuccessfully purchased " + boosterType.getDisplayName() + " for $" + String.format("%.2f", price));
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%booster%", boosterType.getDisplayName());
+        placeholders.put("%price%", String.format("%.2f", price));
+
+        player.sendMessage(plugin.getMessagesManager().getMessage("purchase.success", placeholders));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
         player.closeInventory();
     }
