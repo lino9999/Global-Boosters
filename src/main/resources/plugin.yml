@@ -1,0 +1,28 @@
+name: Global Boosters
+version: '1.0'
+main: com.Lino.globalBoosters.GlobalBoosters
+api-version: '1.21'
+depend: [Vault]
+authors: Lino
+description: A comprehensive global boosters plugin for Minecraft servers
+
+commands:
+  boostshop:
+    description: Open the booster shop GUI
+    usage: /<command>
+    aliases: [bs]
+    permission: globalboosters.shop
+
+permissions:
+  globalboosters.shop:
+    description: Allows access to the booster shop
+    default: true
+  globalboosters.use:
+    description: Allows using booster items
+    default: true
+  globalboosters.admin:
+    description: Admin permission for all features
+    default: op
+    children:
+      globalboosters.shop: true
+      globalboosters.use: true

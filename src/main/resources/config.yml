@@ -1,0 +1,28 @@
+# GlobalBoosters Configuration
+# Configure prices and durations for each booster type
+
+boosters:
+  plant_growth:
+    price: 500.0
+    duration: 30  # minutes
+  spawner_rate:
+    price: 1500.0
+    duration: 30
+  exp_multiplier:
+    price: 1000.0
+    duration: 30
+  mob_drop:
+    price: 1200.0
+    duration: 30
+  mining_speed:
+    price: 800.0
+    duration: 30
+  fishing_luck:
+    price: 600.0
+    duration: 30
+  farming_fortune:
+    price: 700.0
+    duration: 30
+  combat_damage:
+    price: 2000.0
+    duration: 30

@@ -1,0 +1,111 @@
+package com.globalboosters;
+
+import com.globalboosters.commands.BoostShopCommand;
+import com.globalboosters.config.ConfigManager;
+import com.globalboosters.data.DataManager;
+import com.globalboosters.listeners.BoosterItemListener;
+import com.globalboosters.listeners.GameEventListener;
+import com.globalboosters.managers.BoosterManager;
+import com.globalboosters.managers.BossBarManager;
+import com.globalboosters.tasks.BoosterTickTask;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class GlobalBoosters extends JavaPlugin {
+
+    private static GlobalBoosters instance;
+    private Economy economy;
+    private ConfigManager configManager;
+    private DataManager dataManager;
+    private BoosterManager boosterManager;
+    private BossBarManager bossBarManager;
+
+    @Override
+    public void onEnable() {
+        instance = this;
+
+        if (!setupEconomy()) {
+            getLogger().severe("Vault dependency not found! Disabling plugin...");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        initializeManagers();
+        registerCommands();
+        registerListeners();
+        startTasks();
+
+        getLogger().info("GlobalBoosters has been enabled!");
+    }
+
+    @Override
+    public void onDisable() {
+        if (boosterManager != null) {
+            boosterManager.saveAllBoosters();
+        }
+        if (bossBarManager != null) {
+            bossBarManager.removeAllBossBars();
+        }
+
+        getLogger().info("GlobalBoosters has been disabled!");
+    }
+
+    private void initializeManagers() {
+        configManager = new ConfigManager(this);
+        dataManager = new DataManager(this);
+        boosterManager = new BoosterManager(this);
+        bossBarManager = new BossBarManager(this);
+
+        dataManager.loadActiveBoosters();
+    }
+
+    private void registerCommands() {
+        getCommand("boostshop").setExecutor(new BoostShopCommand(this));
+    }
+
+    private void registerListeners() {
+        getServer().getPluginManager().registerEvents(new BoosterItemListener(this), this);
+        getServer().getPluginManager().registerEvents(new GameEventListener(this), this);
+    }
+
+    private void startTasks() {
+        new BoosterTickTask(this).runTaskTimer(this, 20L, 20L);
+    }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        economy = rsp.getProvider();
+        return economy != null;
+    }
+
+    public static GlobalBoosters getInstance() {
+        return instance;
+    }
+
+    public Economy getEconomy() {
+        return economy;
+    }
+
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public BoosterManager getBoosterManager() {
+        return boosterManager;
+    }
+
+    public BossBarManager getBossBarManager() {
+        return bossBarManager;
+    }
+}

@@ -1,0 +1,156 @@
+package com.globalboosters.listeners;
+
+import com.globalboosters.GlobalBoosters;
+import com.globalboosters.boosters.BoosterType;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockGrowEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.SpawnerSpawnEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.List;
+import java.util.Random;
+
+public class GameEventListener implements Listener {
+
+    private final GlobalBoosters plugin;
+    private final Random random = new Random();
+
+    public GameEventListener(GlobalBoosters plugin) {
+        this.plugin = plugin;
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockGrow(BlockGrowEvent event) {
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.PLANT_GROWTH)) {
+            if (random.nextDouble() < 0.5) {
+                Block block = event.getBlock();
+                if (block.getBlockData() instanceof Ageable) {
+                    Ageable ageable = (Ageable) block.getBlockData();
+                    if (ageable.getAge() < ageable.getMaximumAge()) {
+                        ageable.setAge(Math.min(ageable.getAge() + 1, ageable.getMaximumAge()));
+                        block.setBlockData(ageable);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onSpawnerSpawn(SpawnerSpawnEvent event) {
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.SPAWNER_RATE)) {
+            CreatureSpawner spawner = event.getSpawner();
+            spawner.setDelay(spawner.getDelay() / 2);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerExpChange(PlayerExpChangeEvent event) {
+        double multiplier = plugin.getBoosterManager().getMultiplier(BoosterType.EXP_MULTIPLIER);
+        if (multiplier > 1.0) {
+            event.setAmount((int) (event.getAmount() * multiplier));
+        }
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.MOB_DROP)) {
+            List<ItemStack> drops = event.getDrops();
+            for (ItemStack drop : drops) {
+                if (drop != null && drop.getType() != Material.AIR) {
+                    drop.setAmount(drop.getAmount() * 2);
+                }
+            }
+
+            event.setDroppedExp(event.getDroppedExp() * 2);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent event) {
+        if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH &&
+                plugin.getBoosterManager().isBoosterActive(BoosterType.FISHING_LUCK)) {
+
+            Entity caught = event.getCaught();
+            if (caught instanceof org.bukkit.entity.Item) {
+                org.bukkit.entity.Item item = (org.bukkit.entity.Item) caught;
+                ItemStack stack = item.getItemStack();
+                stack.setAmount(stack.getAmount() * 2);
+                item.setItemStack(stack);
+            }
+
+            event.setExpToDrop(event.getExpToDrop() * 2);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.MINING_SPEED)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, 40, 1, false, false));
+        }
+
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.FARMING_FORTUNE)) {
+            if (isCrop(block.getType())) {
+                for (ItemStack drop : block.getDrops(player.getInventory().getItemInMainHand())) {
+                    if (drop != null && drop.getType() != Material.AIR) {
+                        drop.setAmount(drop.getAmount() * 2);
+                        block.getWorld().dropItemNaturally(block.getLocation(), drop);
+                    }
+                }
+                event.setDropItems(false);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
+
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.COMBAT_DAMAGE)) {
+            double damage = event.getDamage();
+            event.setDamage(damage * plugin.getBoosterManager().getMultiplier(BoosterType.COMBAT_DAMAGE));
+        }
+    }
+
+    private boolean isCrop(Material material) {
+        switch (material) {
+            case WHEAT:
+            case CARROTS:
+            case POTATOES:
+            case BEETROOTS:
+            case NETHER_WART:
+            case SWEET_BERRY_BUSH:
+            case COCOA:
+            case SUGAR_CANE:
+            case BAMBOO:
+            case CACTUS:
+            case MELON:
+            case PUMPKIN:
+                return true;
+            default:
+                return false;
+        }
+    }
+}
