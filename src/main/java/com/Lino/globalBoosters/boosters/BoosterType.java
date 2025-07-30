@@ -1,4 +1,4 @@
-package com.globalboosters.boosters;
+package com.Lino.globalBoosters.boosters;
 
 import org.bukkit.Material;
 

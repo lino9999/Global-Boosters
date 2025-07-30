@@ -1,4 +1,4 @@
-package com.globalboosters.utils;
+package com.Lino.globalBoosters.utils;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

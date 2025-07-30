@@ -1,7 +1,7 @@
-package com.globalboosters.listeners;
+package com.Lino.globalBoosters.listeners;
 
-import com.globalboosters.GlobalBoosters;
-import com.globalboosters.boosters.BoosterType;
+import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.boosters.BoosterType;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;

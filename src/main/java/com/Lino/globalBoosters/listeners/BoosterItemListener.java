@@ -1,10 +1,10 @@
-package com.globalboosters.listeners;
+package com.Lino.globalBoosters.listeners;
 
-import com.globalboosters.GlobalBoosters;
-import com.globalboosters.boosters.BoosterType;
-import com.globalboosters.gui.BoosterShopGUI;
-import com.globalboosters.gui.ConfirmPurchaseGUI;
-import com.globalboosters.items.BoosterItem;
+import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.boosters.BoosterType;
+import com.Lino.globalBoosters.gui.BoosterShopGUI;
+import com.Lino.globalBoosters.gui.ConfirmPurchaseGUI;
+import com.Lino.globalBoosters.items.BoosterItem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

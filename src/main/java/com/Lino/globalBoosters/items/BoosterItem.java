@@ -1,7 +1,7 @@
-package com.globalboosters.items;
+package com.Lino.globalBoosters.items;
 
-import com.globalboosters.boosters.BoosterType;
-import com.globalboosters.utils.ItemBuilder;
+import com.Lino.globalBoosters.boosters.BoosterType;
+import com.Lino.globalBoosters.utils.ItemBuilder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

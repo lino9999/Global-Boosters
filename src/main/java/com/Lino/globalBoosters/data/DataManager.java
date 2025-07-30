@@ -1,8 +1,8 @@
-package com.globalboosters.data;
+package com.Lino.globalBoosters.data;
 
-import com.globalboosters.GlobalBoosters;
-import com.globalboosters.boosters.ActiveBooster;
-import com.globalboosters.boosters.BoosterType;
+import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.boosters.ActiveBooster;
+import com.Lino.globalBoosters.boosters.BoosterType;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 

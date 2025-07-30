@@ -1,7 +1,7 @@
-package com.globalboosters.config;
+package com.Lino.globalBoosters.config;
 
-import com.globalboosters.GlobalBoosters;
-import com.globalboosters.boosters.BoosterType;
+import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.boosters.BoosterType;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;

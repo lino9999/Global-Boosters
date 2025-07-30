@@ -1,8 +1,8 @@
-package com.globalboosters.managers;
+package com.Lino.globalBoosters.managers;
 
-import com.globalboosters.GlobalBoosters;
-import com.globalboosters.boosters.ActiveBooster;
-import com.globalboosters.boosters.BoosterType;
+import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.boosters.ActiveBooster;
+import com.Lino.globalBoosters.boosters.BoosterType;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

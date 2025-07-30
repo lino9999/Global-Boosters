@@ -1,13 +1,13 @@
-package com.globalboosters;
+package com.Lino.globalBoosters;
 
-import com.globalboosters.commands.BoostShopCommand;
-import com.globalboosters.config.ConfigManager;
-import com.globalboosters.data.DataManager;
-import com.globalboosters.listeners.BoosterItemListener;
-import com.globalboosters.listeners.GameEventListener;
-import com.globalboosters.managers.BoosterManager;
-import com.globalboosters.managers.BossBarManager;
-import com.globalboosters.tasks.BoosterTickTask;
+import com.Lino.globalBoosters.commands.BoostShopCommand;
+import com.Lino.globalBoosters.config.ConfigManager;
+import com.Lino.globalBoosters.data.DataManager;
+import com.Lino.globalBoosters.listeners.BoosterItemListener;
+import com.Lino.globalBoosters.listeners.GameEventListener;
+import com.Lino.globalBoosters.managers.BoosterManager;
+import com.Lino.globalBoosters.managers.BossBarManager;
+import com.Lino.globalBoosters.tasks.BoosterTickTask;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;

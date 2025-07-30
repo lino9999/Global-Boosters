@@ -1,7 +1,7 @@
-package com.globalboosters.commands;
+package com.Lino.globalBoosters.commands;
 
-import com.globalboosters.GlobalBoosters;
-import com.globalboosters.gui.BoosterShopGUI;
+import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.gui.BoosterShopGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

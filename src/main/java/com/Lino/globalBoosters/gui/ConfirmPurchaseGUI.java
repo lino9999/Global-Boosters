@@ -1,9 +1,9 @@
-package com.globalboosters.gui;
+package com.Lino.globalBoosters.gui;
 
-import com.globalboosters.GlobalBoosters;
-import com.globalboosters.boosters.BoosterType;
-import com.globalboosters.items.BoosterItem;
-import com.globalboosters.utils.ItemBuilder;
+import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.boosters.BoosterType;
+import com.Lino.globalBoosters.items.BoosterItem;
+import com.Lino.globalBoosters.utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
