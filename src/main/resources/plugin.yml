@@ -3,7 +3,7 @@ version: '1.0'
 main: com.Lino.globalBoosters.GlobalBoosters
 api-version: '1.21'
 depend: [Vault]
-authors: Lino
+authors: 'Lino'
 description: A comprehensive global boosters plugin for Minecraft servers
 
 commands:
