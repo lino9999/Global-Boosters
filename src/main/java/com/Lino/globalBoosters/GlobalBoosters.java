@@ -1,6 +1,7 @@
 package com.Lino.globalBoosters;
 
 import com.Lino.globalBoosters.commands.BoostShopCommand;
+import com.Lino.globalBoosters.commands.BoosterCommand;
 import com.Lino.globalBoosters.config.ConfigManager;
 import com.Lino.globalBoosters.config.MessagesManager;
 import com.Lino.globalBoosters.data.DataManager;
@@ -66,6 +67,9 @@ public class GlobalBoosters extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("boostshop").setExecutor(new BoostShopCommand(this));
+        BoosterCommand boosterCommand = new BoosterCommand(this);
+        getCommand("booster").setExecutor(boosterCommand);
+        getCommand("booster").setTabCompleter(boosterCommand);
     }
 
     private void registerListeners() {

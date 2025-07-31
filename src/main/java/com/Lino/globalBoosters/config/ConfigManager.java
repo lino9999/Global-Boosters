@@ -12,6 +12,7 @@ public class ConfigManager {
     private final GlobalBoosters plugin;
     private final Map<BoosterType, Double> boosterPrices;
     private final Map<BoosterType, Integer> boosterDurations;
+    private int maxActiveBoosters;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -24,6 +25,8 @@ public class ConfigManager {
     private void loadConfig() {
         plugin.saveDefaultConfig();
         FileConfiguration config = plugin.getConfig();
+
+        maxActiveBoosters = config.getInt("max_active_boosters", 3);
 
         for (BoosterType type : BoosterType.values()) {
             String path = "boosters." + type.name().toLowerCase();
@@ -48,6 +51,16 @@ public class ConfigManager {
 
     public int getBoosterDuration(BoosterType type) {
         return boosterDurations.getOrDefault(type, 30);
+    }
+
+    public int getMaxActiveBoosters() {
+        return maxActiveBoosters;
+    }
+
+    public void reload() {
+        boosterPrices.clear();
+        boosterDurations.clear();
+        loadConfig();
     }
 
     private double getDefaultPrice(BoosterType type) {

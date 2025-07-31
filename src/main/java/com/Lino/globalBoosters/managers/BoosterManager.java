@@ -26,6 +26,14 @@ public class BoosterManager {
             return false;
         }
 
+        int maxActive = plugin.getConfigManager().getMaxActiveBoosters();
+        if (maxActive != -1 && activeBoosters.size() >= maxActive) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("%max%", String.valueOf(maxActive));
+            activator.sendMessage(plugin.getMessagesManager().getMessage("booster.max-active-reached", placeholders));
+            return false;
+        }
+
         ActiveBooster booster = new ActiveBooster(type, activator.getUniqueId(), activator.getName(), durationMinutes);
         activeBoosters.put(type, booster);
 
@@ -86,6 +94,10 @@ public class BoosterManager {
 
     public Collection<ActiveBooster> getActiveBoosters() {
         return activeBoosters.values();
+    }
+
+    public int getActiveBoosterCount() {
+        return activeBoosters.size();
     }
 
     public double getMultiplier(BoosterType type) {

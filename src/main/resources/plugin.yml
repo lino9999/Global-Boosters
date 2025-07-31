@@ -12,6 +12,11 @@ commands:
     usage: /<command>
     aliases: [bs]
     permission: globalboosters.shop
+  booster:
+    description: Main booster management command
+    usage: /<command> [give/reload]
+    aliases: [boost, gb]
+    permission: globalboosters.admin
 
 permissions:
   globalboosters.shop:
@@ -26,3 +31,11 @@ permissions:
     children:
       globalboosters.shop: true
       globalboosters.use: true
+      globalboosters.admin.give: true
+      globalboosters.admin.reload: true
+  globalboosters.admin.give:
+    description: Allows giving boosters to players
+    default: op
+  globalboosters.admin.reload:
+    description: Allows reloading the plugin configuration
+    default: op

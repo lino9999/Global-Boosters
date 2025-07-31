@@ -13,7 +13,7 @@ shop:
     multiplier: "&7Multiplier: &e%multiplier%x"
     duration: "&7Duration: &e%duration% minutes"
     price: "&7Price: &6$%price%"
-    already-active: "&c&lALREADY ACTIVE"
+    already-active: "&c&lCURRENTLY ACTIVE"
     click-to-purchase: "&e&lCLICK TO PURCHASE"
   confirm:
     button: "&a&lCONFIRM PURCHASE"
@@ -38,6 +38,7 @@ purchase:
 
 booster:
   already-active: "&cThis booster type is already active!"
+  max-active-reached: "&cMaximum number of active boosters reached! (%max% boosters)"
   activated: "%prefix%&e%player% &ahas activated &e%booster% &afor &e%duration% minutes&a!"
   expired: "%prefix%&e%booster% &chas expired!"
   item-name: "&6&l%booster%"

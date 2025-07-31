@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -62,20 +63,21 @@ public class BoosterShopGUI {
         placeholders.put("%duration%", String.valueOf(duration));
         placeholders.put("%price%", String.format("%.2f", price));
 
-        List<String> lore = Arrays.asList(
-                "",
-                plugin.getMessagesManager().getMessage("shop.item-lore.multiplier", placeholders),
-                plugin.getMessagesManager().getMessage("shop.item-lore.duration", placeholders),
-                plugin.getMessagesManager().getMessage("shop.item-lore.price", placeholders),
-                "",
-                isActive ? plugin.getMessagesManager().getMessage("shop.item-lore.already-active")
-                        : plugin.getMessagesManager().getMessage("shop.item-lore.click-to-purchase")
-        );
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.multiplier", placeholders));
+        lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.duration", placeholders));
+        lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.price", placeholders));
+        lore.add("");
+        if (isActive) {
+            lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.already-active"));
+        }
+        lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.click-to-purchase"));
 
         return new ItemBuilder(type.getIcon())
                 .setDisplayName("§6" + type.getDisplayName())
                 .setLore(lore)
-                .addGlow(!isActive)
+                .addGlow(true)
                 .build();
     }
 
@@ -103,13 +105,6 @@ public class BoosterShopGUI {
         }
 
         BoosterType type = BoosterType.values()[boosterIndex];
-
-        if (plugin.getBoosterManager().isBoosterActive(type)) {
-            player.sendMessage(plugin.getMessagesManager().getMessage("booster.already-active"));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            return;
-        }
-
         double price = plugin.getConfigManager().getBoosterPrice(type);
 
         if (!plugin.getEconomy().has(player, price)) {

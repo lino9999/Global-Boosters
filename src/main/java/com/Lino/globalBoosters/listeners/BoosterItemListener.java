@@ -59,6 +59,21 @@ public class BoosterItemListener implements Listener {
             return;
         }
 
+        if (plugin.getBoosterManager().isBoosterActive(type)) {
+            player.sendMessage(plugin.getMessagesManager().getMessage("booster.already-active"));
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
+
+        int maxActive = plugin.getConfigManager().getMaxActiveBoosters();
+        if (maxActive != -1 && plugin.getBoosterManager().getActiveBoosterCount() >= maxActive) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("%max%", String.valueOf(maxActive));
+            player.sendMessage(plugin.getMessagesManager().getMessage("booster.max-active-reached", placeholders));
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
+
         if (plugin.getBoosterManager().activateBooster(type, player, duration)) {
             item.setAmount(item.getAmount() - 1);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);

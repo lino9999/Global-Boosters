@@ -1,6 +1,10 @@
 # GlobalBoosters Configuration
 # Configure prices and durations for each booster type
 
+# Maximum number of boosters that can be active at the same time
+# Set to -1 for unlimited
+max_active_boosters: 3
+
 boosters:
   plant_growth:
     price: 500.0
