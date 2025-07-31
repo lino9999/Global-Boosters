@@ -1,5 +1,5 @@
 # GlobalBoosters Configuration
-# Configure prices and durations for each booster type
+# Configure prices, durations and multipliers for each booster type
 
 # Maximum number of boosters that can be active at the same time
 # Set to -1 for unlimited
@@ -9,24 +9,64 @@ boosters:
   plant_growth:
     price: 500.0
     duration: 30  # minutes
+    multiplier: 2.0
   spawner_rate:
     price: 1500.0
     duration: 30
+    multiplier: 2.0
   exp_multiplier:
     price: 1000.0
     duration: 30
+    multiplier: 2.0
   mob_drop:
     price: 1200.0
     duration: 30
+    multiplier: 2.0
   mining_speed:
     price: 800.0
     duration: 30
+    multiplier: 1.5
   fishing_luck:
     price: 600.0
     duration: 30
+    multiplier: 2.0
   farming_fortune:
     price: 700.0
     duration: 30
+    multiplier: 2.0
   combat_damage:
     price: 2000.0
     duration: 30
+    multiplier: 1.5
+  haste:
+    price: 1000.0
+    duration: 30
+    multiplier: 2.0  # Haste level (1.0 = Haste I, 2.0 = Haste II)
+  resistance:
+    price: 1500.0
+    duration: 30
+    multiplier: 2.0  # Resistance level
+  jump_boost:
+    price: 800.0
+    duration: 30
+    multiplier: 2.0  # Jump Boost level
+  regeneration:
+    price: 2000.0
+    duration: 30
+    multiplier: 1.0  # Regeneration level
+  night_vision:
+    price: 600.0
+    duration: 30
+    multiplier: 1.0  # Night Vision doesn't have levels
+  fire_resistance:
+    price: 1200.0
+    duration: 30
+    multiplier: 1.0  # Fire Resistance doesn't have levels
+  speed:
+    price: 1000.0
+    duration: 30
+    multiplier: 2.0  # Speed level
+  strength:
+    price: 2500.0
+    duration: 30
+    multiplier: 2.0  # Strength level

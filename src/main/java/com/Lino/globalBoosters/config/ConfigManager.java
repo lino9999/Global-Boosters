@@ -12,12 +12,14 @@ public class ConfigManager {
     private final GlobalBoosters plugin;
     private final Map<BoosterType, Double> boosterPrices;
     private final Map<BoosterType, Integer> boosterDurations;
+    private final Map<BoosterType, Double> boosterMultipliers;
     private int maxActiveBoosters;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
         this.boosterPrices = new HashMap<>();
         this.boosterDurations = new HashMap<>();
+        this.boosterMultipliers = new HashMap<>();
 
         loadConfig();
     }
@@ -37,9 +39,13 @@ public class ConfigManager {
             if (!config.contains(path + ".duration")) {
                 config.set(path + ".duration", 30);
             }
+            if (!config.contains(path + ".multiplier")) {
+                config.set(path + ".multiplier", type.getDefaultMultiplier());
+            }
 
             boosterPrices.put(type, config.getDouble(path + ".price"));
             boosterDurations.put(type, config.getInt(path + ".duration"));
+            boosterMultipliers.put(type, config.getDouble(path + ".multiplier"));
         }
 
         plugin.saveConfig();
@@ -53,6 +59,10 @@ public class ConfigManager {
         return boosterDurations.getOrDefault(type, 30);
     }
 
+    public double getBoosterMultiplier(BoosterType type) {
+        return boosterMultipliers.getOrDefault(type, type.getDefaultMultiplier());
+    }
+
     public int getMaxActiveBoosters() {
         return maxActiveBoosters;
     }
@@ -60,6 +70,7 @@ public class ConfigManager {
     public void reload() {
         boosterPrices.clear();
         boosterDurations.clear();
+        boosterMultipliers.clear();
         loadConfig();
     }
 
@@ -81,6 +92,15 @@ public class ConfigManager {
                 return 700.0;
             case COMBAT_DAMAGE:
                 return 2000.0;
+            case HASTE:
+            case RESISTANCE:
+            case JUMP_BOOST:
+            case REGENERATION:
+            case NIGHT_VISION:
+            case FIRE_RESISTANCE:
+            case SPEED:
+            case STRENGTH:
+                return 1000.0;
             default:
                 return 1000.0;
         }

@@ -56,16 +56,19 @@ public class BoosterShopGUI {
     private ItemStack createBoosterItem(BoosterType type) {
         double price = plugin.getConfigManager().getBoosterPrice(type);
         int duration = plugin.getConfigManager().getBoosterDuration(type);
+        double multiplier = plugin.getConfigManager().getBoosterMultiplier(type);
         boolean isActive = plugin.getBoosterManager().isBoosterActive(type);
 
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%multiplier%", String.valueOf(type.getMultiplier()));
+        placeholders.put("%multiplier%", String.valueOf(multiplier));
         placeholders.put("%duration%", String.valueOf(duration));
         placeholders.put("%price%", String.format("%.2f", price));
 
         List<String> lore = new ArrayList<>();
         lore.add("");
-        lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.multiplier", placeholders));
+        if (!type.isEffectBooster()) {
+            lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.multiplier", placeholders));
+        }
         lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.duration", placeholders));
         lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.price", placeholders));
         lore.add("");

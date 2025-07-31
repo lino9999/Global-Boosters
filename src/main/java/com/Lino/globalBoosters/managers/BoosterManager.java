@@ -40,6 +40,10 @@ public class BoosterManager {
         plugin.getBossBarManager().createBossBar(booster);
         plugin.getDataManager().saveActiveBooster(booster);
 
+        if (type.isEffectBooster()) {
+            plugin.getEffectBoosterListener().applyEffectToAll(type);
+        }
+
         announceBoosterActivation(type, activator.getName(), durationMinutes);
         playGlobalSound(Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.5f);
 
@@ -51,6 +55,10 @@ public class BoosterManager {
         if (booster != null) {
             plugin.getBossBarManager().removeBossBar(type);
             plugin.getDataManager().removeActiveBooster(type);
+
+            if (type.isEffectBooster()) {
+                plugin.getEffectBoosterListener().removeEffectFromAll(type);
+            }
 
             announceBoosterDeactivation(type);
             playGlobalSound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 0.5f);
@@ -82,6 +90,10 @@ public class BoosterManager {
     public void loadBooster(ActiveBooster booster) {
         activeBoosters.put(booster.getType(), booster);
         plugin.getBossBarManager().createBossBar(booster);
+
+        if (booster.getType().isEffectBooster()) {
+            plugin.getEffectBoosterListener().applyEffectToAll(booster.getType());
+        }
     }
 
     public boolean isBoosterActive(BoosterType type) {
@@ -102,7 +114,7 @@ public class BoosterManager {
 
     public double getMultiplier(BoosterType type) {
         if (isBoosterActive(type)) {
-            return type.getMultiplier();
+            return plugin.getConfigManager().getBoosterMultiplier(type);
         }
         return 1.0;
     }

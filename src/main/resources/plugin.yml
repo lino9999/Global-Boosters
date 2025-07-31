@@ -17,6 +17,10 @@ commands:
     usage: /<command> [give/reload]
     aliases: [boost, gb]
     permission: globalboosters.admin
+  globalboosters:
+    description: Main plugin command
+    usage: /<command> [help/list]
+    aliases: [gbooster, globalboost]
 
 permissions:
   globalboosters.shop:

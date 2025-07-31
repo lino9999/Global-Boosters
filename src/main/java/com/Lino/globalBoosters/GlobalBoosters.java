@@ -2,10 +2,12 @@ package com.Lino.globalBoosters;
 
 import com.Lino.globalBoosters.commands.BoostShopCommand;
 import com.Lino.globalBoosters.commands.BoosterCommand;
+import com.Lino.globalBoosters.commands.GlobalBoostersCommand;
 import com.Lino.globalBoosters.config.ConfigManager;
 import com.Lino.globalBoosters.config.MessagesManager;
 import com.Lino.globalBoosters.data.DataManager;
 import com.Lino.globalBoosters.listeners.BoosterItemListener;
+import com.Lino.globalBoosters.listeners.EffectBoosterListener;
 import com.Lino.globalBoosters.listeners.GameEventListener;
 import com.Lino.globalBoosters.managers.BoosterManager;
 import com.Lino.globalBoosters.managers.BossBarManager;
@@ -24,6 +26,7 @@ public class GlobalBoosters extends JavaPlugin {
     private BoosterManager boosterManager;
     private BossBarManager bossBarManager;
     private BoosterItemListener boosterItemListener;
+    private EffectBoosterListener effectBoosterListener;
 
     @Override
     public void onEnable() {
@@ -67,6 +70,8 @@ public class GlobalBoosters extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("boostshop").setExecutor(new BoostShopCommand(this));
+        getCommand("globalboosters").setExecutor(new GlobalBoostersCommand(this));
+
         BoosterCommand boosterCommand = new BoosterCommand(this);
         getCommand("booster").setExecutor(boosterCommand);
         getCommand("booster").setTabCompleter(boosterCommand);
@@ -74,7 +79,10 @@ public class GlobalBoosters extends JavaPlugin {
 
     private void registerListeners() {
         boosterItemListener = new BoosterItemListener(this);
+        effectBoosterListener = new EffectBoosterListener(this);
+
         getServer().getPluginManager().registerEvents(boosterItemListener, this);
+        getServer().getPluginManager().registerEvents(effectBoosterListener, this);
         getServer().getPluginManager().registerEvents(new GameEventListener(this), this);
     }
 
@@ -124,5 +132,9 @@ public class GlobalBoosters extends JavaPlugin {
 
     public BoosterItemListener getBoosterItemListener() {
         return boosterItemListener;
+    }
+
+    public EffectBoosterListener getEffectBoosterListener() {
+        return effectBoosterListener;
     }
 }
