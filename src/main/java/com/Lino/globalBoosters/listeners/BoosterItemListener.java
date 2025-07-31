@@ -47,7 +47,7 @@ public class BoosterItemListener implements Listener {
         }
 
         if (!player.hasPermission("globalboosters.use")) {
-            player.sendMessage("§cYou don't have permission to use boosters!");
+            player.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission-use"));
             return;
         }
 

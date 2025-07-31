@@ -2,6 +2,7 @@ package com.Lino.globalBoosters;
 
 import com.Lino.globalBoosters.commands.BoostShopCommand;
 import com.Lino.globalBoosters.config.ConfigManager;
+import com.Lino.globalBoosters.config.MessagesManager;
 import com.Lino.globalBoosters.data.DataManager;
 import com.Lino.globalBoosters.listeners.BoosterItemListener;
 import com.Lino.globalBoosters.listeners.GameEventListener;
@@ -17,6 +18,7 @@ public class GlobalBoosters extends JavaPlugin {
     private static GlobalBoosters instance;
     private Economy economy;
     private ConfigManager configManager;
+    private MessagesManager messagesManager;
     private DataManager dataManager;
     private BoosterManager boosterManager;
     private BossBarManager bossBarManager;
@@ -53,6 +55,7 @@ public class GlobalBoosters extends JavaPlugin {
 
     private void initializeManagers() {
         configManager = new ConfigManager(this);
+        messagesManager = new MessagesManager(this);
         dataManager = new DataManager(this);
         boosterManager = new BoosterManager(this);
         bossBarManager = new BossBarManager(this);
@@ -95,6 +98,10 @@ public class GlobalBoosters extends JavaPlugin {
 
     public ConfigManager getConfigManager() {
         return configManager;
+    }
+
+    public MessagesManager getMessagesManager() {
+        return messagesManager;
     }
 
     public DataManager getDataManager() {

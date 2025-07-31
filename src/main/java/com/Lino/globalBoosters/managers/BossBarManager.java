@@ -9,6 +9,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -70,11 +71,12 @@ public class BossBarManager {
     }
 
     private String formatBossBarTitle(ActiveBooster booster) {
-        return String.format("§e%s §7- §a%s §7sponsored by §b%s",
-                booster.getType().getDisplayName(),
-                booster.getTimeRemaining(),
-                booster.getActivatorName()
-        );
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%booster%", booster.getType().getDisplayName());
+        placeholders.put("%time%", booster.getTimeRemaining());
+        placeholders.put("%player%", booster.getActivatorName());
+
+        return plugin.getMessagesManager().getMessage("bossbar.format", placeholders);
     }
 
     private BarColor getBarColor(BoosterType type) {
