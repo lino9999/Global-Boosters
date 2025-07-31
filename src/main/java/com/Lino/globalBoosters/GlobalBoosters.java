@@ -22,6 +22,7 @@ public class GlobalBoosters extends JavaPlugin {
     private DataManager dataManager;
     private BoosterManager boosterManager;
     private BossBarManager bossBarManager;
+    private BoosterItemListener boosterItemListener;
 
     @Override
     public void onEnable() {
@@ -68,7 +69,8 @@ public class GlobalBoosters extends JavaPlugin {
     }
 
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new BoosterItemListener(this), this);
+        boosterItemListener = new BoosterItemListener(this);
+        getServer().getPluginManager().registerEvents(boosterItemListener, this);
         getServer().getPluginManager().registerEvents(new GameEventListener(this), this);
     }
 
@@ -114,5 +116,9 @@ public class GlobalBoosters extends JavaPlugin {
 
     public BossBarManager getBossBarManager() {
         return bossBarManager;
+    }
+
+    public BoosterItemListener getBoosterItemListener() {
+        return boosterItemListener;
     }
 }

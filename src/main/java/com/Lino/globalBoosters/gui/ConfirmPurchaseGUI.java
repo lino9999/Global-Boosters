@@ -3,6 +3,7 @@ package com.Lino.globalBoosters.gui;
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
 import com.Lino.globalBoosters.items.BoosterItem;
+import com.Lino.globalBoosters.listeners.BoosterItemListener;
 import com.Lino.globalBoosters.utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -88,12 +89,19 @@ public class ConfirmPurchaseGUI {
     public void open() {
         player.openInventory(inventory);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f, 1.5f);
+
+        BoosterItemListener listener = getBoosterItemListener();
+        if (listener != null) {
+            listener.unregisterGUIs(player);
+            listener.registerConfirmGUI(player, this);
+        }
     }
 
     public void handleClick(int slot) {
         if (slot == 11) {
             purchaseBooster();
         } else if (slot == 15) {
+            player.closeInventory();
             new BoosterShopGUI(plugin, player).open();
         }
     }
@@ -132,5 +140,9 @@ public class ConfirmPurchaseGUI {
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    private BoosterItemListener getBoosterItemListener() {
+        return plugin.getBoosterItemListener();
     }
 }

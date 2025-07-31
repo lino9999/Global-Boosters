@@ -12,16 +12,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BoosterItemListener implements Listener {
 
     private final GlobalBoosters plugin;
+    private final Map<Player, BoosterShopGUI> shopGUIs;
+    private final Map<Player, ConfirmPurchaseGUI> confirmGUIs;
 
     public BoosterItemListener(GlobalBoosters plugin) {
         this.plugin = plugin;
+        this.shopGUIs = new HashMap<>();
+        this.confirmGUIs = new HashMap<>();
     }
 
     @EventHandler
@@ -71,7 +79,7 @@ public class BoosterItemListener implements Listener {
             return;
         }
 
-        if (event.getView().getTitle().equals("§6§lBooster Shop")) {
+        if (shopGUIs.containsKey(player)) {
             event.setCancelled(true);
 
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
@@ -79,10 +87,10 @@ public class BoosterItemListener implements Listener {
             }
 
             if (event.getRawSlot() < event.getInventory().getSize()) {
-                BoosterShopGUI gui = new BoosterShopGUI(plugin, player);
+                BoosterShopGUI gui = shopGUIs.get(player);
                 gui.handleClick(event.getRawSlot());
             }
-        } else if (event.getView().getTitle().equals("§6Confirm Purchase")) {
+        } else if (confirmGUIs.containsKey(player)) {
             event.setCancelled(true);
 
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
@@ -90,17 +98,36 @@ public class BoosterItemListener implements Listener {
             }
 
             if (event.getRawSlot() < event.getInventory().getSize()) {
-                String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
-                if (itemName.contains("CONFIRM") || itemName.contains("CANCEL")) {
-                    ConfirmPurchaseGUI gui = new ConfirmPurchaseGUI(plugin, player, null, 0);
-                    gui.handleClick(event.getRawSlot());
-                }
+                ConfirmPurchaseGUI gui = confirmGUIs.get(player);
+                gui.handleClick(event.getRawSlot());
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getPlayer() instanceof Player) {
+            Player player = (Player) event.getPlayer();
+            shopGUIs.remove(player);
+            confirmGUIs.remove(player);
         }
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         plugin.getBossBarManager().addPlayerToBossBars(event.getPlayer());
+    }
+
+    public void registerShopGUI(Player player, BoosterShopGUI gui) {
+        shopGUIs.put(player, gui);
+    }
+
+    public void registerConfirmGUI(Player player, ConfirmPurchaseGUI gui) {
+        confirmGUIs.put(player, gui);
+    }
+
+    public void unregisterGUIs(Player player) {
+        shopGUIs.remove(player);
+        confirmGUIs.remove(player);
     }
 }
