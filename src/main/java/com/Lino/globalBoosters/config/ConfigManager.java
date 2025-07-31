@@ -101,6 +101,14 @@ public class ConfigManager {
             case SPEED:
             case STRENGTH:
                 return 1000.0;
+            case NO_FALL_DAMAGE:
+                return 800.0;
+            case HUNGER_SAVER:
+                return 600.0;
+            case ARMOR_DURABILITY:
+                return 1200.0;
+            case KEEP_INVENTORY:
+                return 3000.0;
             default:
                 return 1000.0;
         }

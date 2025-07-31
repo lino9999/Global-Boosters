@@ -73,3 +73,7 @@ effects:
   fire_resistance: "&7• &fGives all players Fire Resistance effect"
   speed: "&7• &fGives all players Speed effect"
   strength: "&7• &fGives all players Strength effect"
+  no_fall_damage: "&7• &fRemoves fall damage for all players"
+  hunger_saver: "&7• &fReduces hunger loss by 50%"
+  armor_durability: "&7• &fArmor lasts 50% longer"
+  keep_inventory: "&7• &fPlayers keep items on death"

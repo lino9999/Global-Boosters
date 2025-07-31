@@ -23,13 +23,23 @@ public class BoosterShopGUI {
     private final Player player;
     private final Inventory inventory;
 
-    private static final int[] BOOSTER_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
-    private static final int[] DECORATION_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35};
+    private static final int[] BOOSTER_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
+    };
+
+    private static final int[] DECORATION_SLOTS = {
+            0, 1, 2, 3, 4, 5, 6, 7, 8,
+            9, 17, 18, 26, 27, 35, 36, 44,
+            45, 46, 47, 48, 49, 50, 51, 52, 53
+    };
 
     public BoosterShopGUI(GlobalBoosters plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
-        this.inventory = Bukkit.createInventory(null, 36, plugin.getMessagesManager().getMessage("shop.title"));
+        this.inventory = Bukkit.createInventory(null, 54, plugin.getMessagesManager().getMessage("shop.title"));
 
         setupGUI();
     }

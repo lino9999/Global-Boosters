@@ -22,7 +22,7 @@ public class BoosterItem {
         GlobalBoosters plugin = GlobalBoosters.getInstance();
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%booster%", type.getDisplayName());
-        placeholders.put("%multiplier%", String.valueOf(type.getMultiplier()));
+        placeholders.put("%multiplier%", String.valueOf(plugin.getConfigManager().getBoosterMultiplier(type)));
         placeholders.put("%duration%", String.valueOf(durationMinutes));
 
         ItemStack item = new ItemBuilder(type.getIcon())

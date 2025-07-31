@@ -18,7 +18,11 @@ public enum BoosterType {
     NIGHT_VISION("Night Vision Booster", Material.GOLDEN_CARROT, 1.0, true),
     FIRE_RESISTANCE("Fire Resistance Booster", Material.MAGMA_CREAM, 1.0, true),
     SPEED("Speed Booster", Material.SUGAR, 1.0, true),
-    STRENGTH("Strength Booster", Material.BLAZE_POWDER, 1.0, true);
+    STRENGTH("Strength Booster", Material.BLAZE_POWDER, 1.0, true),
+    NO_FALL_DAMAGE("No Fall Damage Booster", Material.FEATHER, 1.0, false),
+    HUNGER_SAVER("Hunger Saver Booster", Material.COOKED_BEEF, 0.5, false),
+    ARMOR_DURABILITY("Armor Durability Booster", Material.ANVIL, 0.5, false),
+    KEEP_INVENTORY("Keep Inventory Booster", Material.ENDER_CHEST, 1.0, false);
 
     private final String displayName;
     private final Material icon;

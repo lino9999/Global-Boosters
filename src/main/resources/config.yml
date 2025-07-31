@@ -70,3 +70,19 @@ boosters:
     price: 2500.0
     duration: 30
     multiplier: 2.0  # Strength level
+  no_fall_damage:
+    price: 800.0
+    duration: 30
+    multiplier: 1.0  # Not used, just cancels fall damage
+  hunger_saver:
+    price: 600.0
+    duration: 30
+    multiplier: 0.5  # 50% chance to not lose hunger
+  armor_durability:
+    price: 1200.0
+    duration: 30
+    multiplier: 0.5  # 50% chance armor doesn't take damage
+  keep_inventory:
+    price: 3000.0
+    duration: 30
+    multiplier: 1.0  # Not used, keeps inventory on death

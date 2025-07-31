@@ -2,6 +2,7 @@ package com.Lino.globalBoosters.listeners;
 
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -16,22 +17,31 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class GameEventListener implements Listener {
 
     private final GlobalBoosters plugin;
     private final Random random = new Random();
+    private final Map<Player, ItemStack[]> savedInventories = new HashMap<>();
+    private final Map<Player, ItemStack[]> savedArmor = new HashMap<>();
 
     public GameEventListener(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -134,6 +144,62 @@ public class GameEventListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.FALL &&
+                plugin.getBoosterManager().isBoosterActive(BoosterType.NO_FALL_DAMAGE)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.HUNGER_SAVER)) {
+            if (event.getFoodLevel() < player.getFoodLevel()) {
+                if (random.nextDouble() < plugin.getBoosterManager().getMultiplier(BoosterType.HUNGER_SAVER)) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerItemDamage(PlayerItemDamageEvent event) {
+        ItemStack item = event.getItem();
+
+        if (!isArmor(item.getType())) {
+            return;
+        }
+
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.ARMOR_DURABILITY)) {
+            if (random.nextDouble() < plugin.getBoosterManager().getMultiplier(BoosterType.ARMOR_DURABILITY)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.KEEP_INVENTORY)) {
+            event.setKeepInventory(true);
+            event.setKeepLevel(true);
+            event.getDrops().clear();
+            event.setDroppedExp(0);
+        }
+    }
+
     private boolean isCrop(Material material) {
         switch (material) {
             case WHEAT:
@@ -152,5 +218,12 @@ public class GameEventListener implements Listener {
             default:
                 return false;
         }
+    }
+
+    private boolean isArmor(Material material) {
+        String name = material.name();
+        return name.endsWith("_HELMET") || name.endsWith("_CHESTPLATE") ||
+                name.endsWith("_LEGGINGS") || name.endsWith("_BOOTS") ||
+                name.equals("ELYTRA") || name.equals("SHIELD");
     }
 }
