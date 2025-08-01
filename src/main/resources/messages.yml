@@ -15,6 +15,10 @@ shop:
     price: "&7Price: &6$%price%"
     already-active: "&c&lCURRENTLY ACTIVE"
     click-to-purchase: "&e&lCLICK TO PURCHASE"
+    supply-remaining: "&bSupply: &f%remaining% left"
+    out-of-stock: "&c&lOUT OF STOCK"
+    next-restock: "&7Next restock in: &e%time%"
+    cannot-purchase: "&c&lCANNOT PURCHASE"
   confirm:
     button: "&a&lCONFIRM PURCHASE"
     cancel: "&c&lCANCEL"
@@ -35,6 +39,7 @@ purchase:
   not-enough-money: "&cYou don't have enough money! You need $%price%"
   success: "&aSuccessfully purchased %booster% for $%price%"
   inventory-full: "&eYour inventory was full! The booster has been dropped on the ground."
+  out-of-stock: "&c%booster% is currently out of stock! Check back later."
 
 booster:
   already-active: "&cThis booster type is already active!"

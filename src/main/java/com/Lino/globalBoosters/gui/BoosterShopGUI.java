@@ -66,32 +66,72 @@ public class BoosterShopGUI {
     private ItemStack createBoosterItem(BoosterType type) {
         double price = plugin.getConfigManager().getBoosterPrice(type);
         int duration = plugin.getConfigManager().getBoosterDuration(type);
-        double multiplier = plugin.getConfigManager().getBoosterMultiplier(type);
         boolean isActive = plugin.getBoosterManager().isBoosterActive(type);
+        boolean limitedSupply = plugin.getConfigManager().isLimitedSupplyEnabled();
+        int remaining = plugin.getSupplyManager().getRemainingPurchases(type);
 
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%multiplier%", String.valueOf(multiplier));
         placeholders.put("%duration%", String.valueOf(duration));
         placeholders.put("%price%", String.format("%.2f", price));
 
         List<String> lore = new ArrayList<>();
         lore.add("");
-        if (!type.isEffectBooster()) {
+
+        if (!isNoMultiplierBooster(type) && !type.isEffectBooster()) {
+            double multiplier = plugin.getConfigManager().getBoosterMultiplier(type);
+            placeholders.put("%multiplier%", String.valueOf(multiplier));
             lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.multiplier", placeholders));
         }
+
         lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.duration", placeholders));
         lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.price", placeholders));
+
+        if (limitedSupply) {
+            lore.add("");
+            if (remaining > 0) {
+                placeholders.put("%remaining%", String.valueOf(remaining));
+                lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.supply-remaining", placeholders));
+            } else {
+                lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.out-of-stock"));
+            }
+            String resetTime = plugin.getSupplyManager().getTimeUntilReset(type);
+            placeholders.put("%time%", resetTime);
+            lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.next-restock", placeholders));
+        }
+
         lore.add("");
         if (isActive) {
             lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.already-active"));
         }
-        lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.click-to-purchase"));
 
-        return new ItemBuilder(type.getIcon())
+        if (limitedSupply && remaining <= 0) {
+            lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.cannot-purchase"));
+        } else {
+            lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.click-to-purchase"));
+        }
+
+        Material icon = type.getIcon();
+        if (limitedSupply && remaining <= 0) {
+            icon = Material.BARRIER;
+        }
+
+        return new ItemBuilder(icon)
                 .setDisplayName("§6" + type.getDisplayName())
                 .setLore(lore)
                 .addGlow(true)
                 .build();
+    }
+
+    private boolean isNoMultiplierBooster(BoosterType type) {
+        switch (type) {
+            case NO_FALL_DAMAGE:
+            case KEEP_INVENTORY:
+            case FLY:
+            case PLANT_GROWTH:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void open() {
@@ -118,6 +158,17 @@ public class BoosterShopGUI {
         }
 
         BoosterType type = BoosterType.values()[boosterIndex];
+
+        if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
+            if (!plugin.getSupplyManager().canPurchase(type)) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("%booster%", type.getDisplayName());
+                player.sendMessage(plugin.getMessagesManager().getMessage("purchase.out-of-stock", placeholders));
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                return;
+            }
+        }
+
         double price = plugin.getConfigManager().getBoosterPrice(type);
 
         if (!plugin.getEconomy().has(player, price)) {

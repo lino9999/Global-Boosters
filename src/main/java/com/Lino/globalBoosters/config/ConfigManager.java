@@ -14,6 +14,8 @@ public class ConfigManager {
     private final Map<BoosterType, Integer> boosterDurations;
     private final Map<BoosterType, Double> boosterMultipliers;
     private int maxActiveBoosters;
+    private boolean limitedSupplyEnabled;
+    private int resetHour;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -29,6 +31,8 @@ public class ConfigManager {
         FileConfiguration config = plugin.getConfig();
 
         maxActiveBoosters = config.getInt("max_active_boosters", 3);
+        limitedSupplyEnabled = config.getBoolean("limited_supply_mode", false);
+        resetHour = config.getInt("supply_reset_hour", 0);
 
         for (BoosterType type : BoosterType.values()) {
             String path = "boosters." + type.name().toLowerCase();
@@ -39,13 +43,16 @@ public class ConfigManager {
             if (!config.contains(path + ".duration")) {
                 config.set(path + ".duration", 30);
             }
-            if (!config.contains(path + ".multiplier")) {
-                config.set(path + ".multiplier", type.getDefaultMultiplier());
-            }
 
             boosterPrices.put(type, config.getDouble(path + ".price"));
             boosterDurations.put(type, config.getInt(path + ".duration"));
-            boosterMultipliers.put(type, config.getDouble(path + ".multiplier"));
+
+            if (!type.isEffectBooster() && !isNoMultiplierBooster(type)) {
+                if (!config.contains(path + ".multiplier")) {
+                    config.set(path + ".multiplier", type.getDefaultMultiplier());
+                }
+                boosterMultipliers.put(type, config.getDouble(path + ".multiplier"));
+            }
         }
 
         plugin.saveConfig();
@@ -65,6 +72,26 @@ public class ConfigManager {
 
     public int getMaxActiveBoosters() {
         return maxActiveBoosters;
+    }
+
+    public boolean isLimitedSupplyEnabled() {
+        return limitedSupplyEnabled;
+    }
+
+    public int getResetHour() {
+        return resetHour;
+    }
+
+    private boolean isNoMultiplierBooster(BoosterType type) {
+        switch (type) {
+            case NO_FALL_DAMAGE:
+            case KEEP_INVENTORY:
+            case FLY:
+            case PLANT_GROWTH:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void reload() {

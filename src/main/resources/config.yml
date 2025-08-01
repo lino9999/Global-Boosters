@@ -5,11 +5,16 @@
 # Set to -1 for unlimited
 max_active_boosters: 3
 
+# Limited Supply Mode - If enabled, each booster can only be purchased 10 times every 24 hours
+limited_supply_mode: true
+
+# Hour of day when supply resets (0-23, where 0 = midnight, 12 = noon, 23 = 11 PM)
+supply_reset_hour: 0
+
 boosters:
   plant_growth:
     price: 500.0
     duration: 30  # minutes
-    multiplier: 2.0
   spawner_rate:
     price: 1500.0
     duration: 30
@@ -73,7 +78,6 @@ boosters:
   no_fall_damage:
     price: 800.0
     duration: 30
-    multiplier: 1.0  # Not used, just cancels fall damage
   hunger_saver:
     price: 600.0
     duration: 30
@@ -85,8 +89,7 @@ boosters:
   keep_inventory:
     price: 3000.0
     duration: 30
-    multiplier: 1.0  # Not used, keeps inventory on death
   fly:
     price: 2500.0
     duration: 30
-    multiplier: 1.0  # Not used, enables flight for all
+    multiplier: 1.0  # Regeneration level

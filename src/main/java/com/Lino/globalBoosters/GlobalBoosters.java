@@ -12,6 +12,7 @@ import com.Lino.globalBoosters.listeners.FlyBoosterListener;
 import com.Lino.globalBoosters.listeners.GameEventListener;
 import com.Lino.globalBoosters.managers.BoosterManager;
 import com.Lino.globalBoosters.managers.BossBarManager;
+import com.Lino.globalBoosters.managers.SupplyManager;
 import com.Lino.globalBoosters.tasks.BoosterTickTask;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -29,6 +30,7 @@ public class GlobalBoosters extends JavaPlugin {
     private BoosterItemListener boosterItemListener;
     private EffectBoosterListener effectBoosterListener;
     private FlyBoosterListener flyBoosterListener;
+    private SupplyManager supplyManager;
 
     @Override
     public void onEnable() {
@@ -56,6 +58,9 @@ public class GlobalBoosters extends JavaPlugin {
         if (bossBarManager != null) {
             bossBarManager.removeAllBossBars();
         }
+        if (supplyManager != null) {
+            supplyManager.shutdown();
+        }
 
         getLogger().info("GlobalBoosters has been disabled!");
     }
@@ -66,6 +71,7 @@ public class GlobalBoosters extends JavaPlugin {
         dataManager = new DataManager(this);
         boosterManager = new BoosterManager(this);
         bossBarManager = new BossBarManager(this);
+        supplyManager = new SupplyManager(this);
 
         dataManager.loadActiveBoosters();
     }
@@ -144,5 +150,9 @@ public class GlobalBoosters extends JavaPlugin {
 
     public FlyBoosterListener getFlyBoosterListener() {
         return flyBoosterListener;
+    }
+
+    public SupplyManager getSupplyManager() {
+        return supplyManager;
     }
 }

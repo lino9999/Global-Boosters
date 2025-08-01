@@ -107,6 +107,7 @@ public class ConfirmPurchaseGUI {
     }
 
     private void purchaseBooster() {
+        // Double check money
         if (!plugin.getEconomy().has(player, price)) {
             player.sendMessage(plugin.getMessagesManager().getMessage("purchase.not-enough-money",
                     new HashMap<String, String>() {{ put("%price%", String.format("%.2f", price)); }}));
@@ -115,8 +116,36 @@ public class ConfirmPurchaseGUI {
             return;
         }
 
+        // Double check supply BEFORE withdrawing money
+        if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
+            if (!plugin.getSupplyManager().canPurchase(boosterType)) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("%booster%", boosterType.getDisplayName());
+                player.sendMessage(plugin.getMessagesManager().getMessage("purchase.out-of-stock", placeholders));
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                player.closeInventory();
+                return;
+            }
+        }
+
+        // Withdraw money
         plugin.getEconomy().withdrawPlayer(player, price);
 
+        // Try to record purchase - if it fails, refund
+        if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
+            if (!plugin.getSupplyManager().recordPurchase(boosterType)) {
+                // Refund if purchase failed
+                plugin.getEconomy().depositPlayer(player, price);
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("%booster%", boosterType.getDisplayName());
+                player.sendMessage(plugin.getMessagesManager().getMessage("purchase.out-of-stock", placeholders));
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                player.closeInventory();
+                return;
+            }
+        }
+
+        // Give the booster item
         ItemStack boosterItem = BoosterItem.createBoosterItem(
                 boosterType,
                 plugin.getConfigManager().getBoosterDuration(boosterType)
@@ -136,6 +165,11 @@ public class ConfirmPurchaseGUI {
         player.sendMessage(plugin.getMessagesManager().getMessage("purchase.success", placeholders));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
         player.closeInventory();
+
+        // Reopen shop GUI to show updated supply
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            new BoosterShopGUI(plugin, player).open();
+        }, 1L);
     }
 
     public Inventory getInventory() {

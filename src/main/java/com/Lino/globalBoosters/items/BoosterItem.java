@@ -9,9 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BoosterItem {
 
@@ -22,24 +20,32 @@ public class BoosterItem {
         GlobalBoosters plugin = GlobalBoosters.getInstance();
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%booster%", type.getDisplayName());
-        placeholders.put("%multiplier%", String.valueOf(plugin.getConfigManager().getBoosterMultiplier(type)));
         placeholders.put("%duration%", String.valueOf(durationMinutes));
+
+        List<String> lore = new ArrayList<>(Arrays.asList(
+                plugin.getMessagesManager().getMessage("booster.item-lore.line1"),
+                plugin.getMessagesManager().getMessage("booster.item-lore.line2"),
+                plugin.getMessagesManager().getMessage("booster.item-lore.line3"),
+                plugin.getMessagesManager().getMessage("booster.item-lore.line4")
+        ));
+
+        if (!isNoMultiplierBooster(type) && !type.isEffectBooster()) {
+            placeholders.put("%multiplier%", String.valueOf(plugin.getConfigManager().getBoosterMultiplier(type)));
+            lore.add(plugin.getMessagesManager().getMessage("booster.item-lore.multiplier", placeholders));
+        }
+
+        lore.addAll(Arrays.asList(
+                plugin.getMessagesManager().getMessage("booster.item-lore.duration", placeholders),
+                plugin.getMessagesManager().getMessage("booster.item-lore.line5"),
+                plugin.getMessagesManager().getMessage("booster.item-lore.effects"),
+                getEffectDescription(type),
+                "",
+                plugin.getMessagesManager().getMessage("booster.item-lore.activate")
+        ));
 
         ItemStack item = new ItemBuilder(type.getIcon())
                 .setDisplayName(plugin.getMessagesManager().getMessage("booster.item-name", placeholders))
-                .setLore(Arrays.asList(
-                        plugin.getMessagesManager().getMessage("booster.item-lore.line1"),
-                        plugin.getMessagesManager().getMessage("booster.item-lore.line2"),
-                        plugin.getMessagesManager().getMessage("booster.item-lore.line3"),
-                        plugin.getMessagesManager().getMessage("booster.item-lore.line4"),
-                        plugin.getMessagesManager().getMessage("booster.item-lore.multiplier", placeholders),
-                        plugin.getMessagesManager().getMessage("booster.item-lore.duration", placeholders),
-                        plugin.getMessagesManager().getMessage("booster.item-lore.line5"),
-                        plugin.getMessagesManager().getMessage("booster.item-lore.effects"),
-                        getEffectDescription(type),
-                        "",
-                        plugin.getMessagesManager().getMessage("booster.item-lore.activate")
-                ))
+                .setLore(lore)
                 .addGlow(true)
                 .build();
 
@@ -50,6 +56,18 @@ public class BoosterItem {
         item.setItemMeta(meta);
 
         return item;
+    }
+
+    private static boolean isNoMultiplierBooster(BoosterType type) {
+        switch (type) {
+            case NO_FALL_DAMAGE:
+            case KEEP_INVENTORY:
+            case FLY:
+            case PLANT_GROWTH:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public static boolean isBoosterItem(ItemStack item) {
