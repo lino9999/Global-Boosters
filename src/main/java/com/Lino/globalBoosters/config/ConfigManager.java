@@ -109,6 +109,8 @@ public class ConfigManager {
                 return 1200.0;
             case KEEP_INVENTORY:
                 return 3000.0;
+            case FLY:
+                return 2500.0;
             default:
                 return 1000.0;
         }

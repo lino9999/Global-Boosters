@@ -22,7 +22,8 @@ public enum BoosterType {
     NO_FALL_DAMAGE("No Fall Damage Booster", Material.FEATHER, 1.0, false),
     HUNGER_SAVER("Hunger Saver Booster", Material.COOKED_BEEF, 0.5, false),
     ARMOR_DURABILITY("Armor Durability Booster", Material.ANVIL, 0.5, false),
-    KEEP_INVENTORY("Keep Inventory Booster", Material.ENDER_CHEST, 1.0, false);
+    KEEP_INVENTORY("Keep Inventory Booster", Material.ENDER_CHEST, 1.0, false),
+    FLY("Fly Booster", Material.ELYTRA, 1.0, false);
 
     private final String displayName;
     private final Material icon;

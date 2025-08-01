@@ -77,3 +77,4 @@ effects:
   hunger_saver: "&7• &fReduces hunger loss by 50%"
   armor_durability: "&7• &fArmor lasts 50% longer"
   keep_inventory: "&7• &fPlayers keep items on death"
+  fly: "&7• &fEnables flight for all players"

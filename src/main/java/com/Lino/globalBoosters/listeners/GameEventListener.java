@@ -47,19 +47,20 @@ public class GameEventListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockGrow(BlockGrowEvent event) {
-        if (plugin.getBoosterManager().isBoosterActive(BoosterType.PLANT_GROWTH)) {
-            if (random.nextDouble() < 0.5) {
-                Block block = event.getBlock();
+        if (plugin.getBoosterManager().isBoosterActive(BoosterType.PLANT_GROWTH) && !event.isCancelled()) {
+            Block block = event.getBlock();
+
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (block.getBlockData() instanceof Ageable) {
                     Ageable ageable = (Ageable) block.getBlockData();
                     if (ageable.getAge() < ageable.getMaximumAge()) {
-                        ageable.setAge(Math.min(ageable.getAge() + 1, ageable.getMaximumAge()));
+                        ageable.setAge(ageable.getMaximumAge());
                         block.setBlockData(ageable);
                     }
                 }
-            }
+            }, 1L);
         }
     }
 

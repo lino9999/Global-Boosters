@@ -8,6 +8,7 @@ import com.Lino.globalBoosters.config.MessagesManager;
 import com.Lino.globalBoosters.data.DataManager;
 import com.Lino.globalBoosters.listeners.BoosterItemListener;
 import com.Lino.globalBoosters.listeners.EffectBoosterListener;
+import com.Lino.globalBoosters.listeners.FlyBoosterListener;
 import com.Lino.globalBoosters.listeners.GameEventListener;
 import com.Lino.globalBoosters.managers.BoosterManager;
 import com.Lino.globalBoosters.managers.BossBarManager;
@@ -27,6 +28,7 @@ public class GlobalBoosters extends JavaPlugin {
     private BossBarManager bossBarManager;
     private BoosterItemListener boosterItemListener;
     private EffectBoosterListener effectBoosterListener;
+    private FlyBoosterListener flyBoosterListener;
 
     @Override
     public void onEnable() {
@@ -80,9 +82,11 @@ public class GlobalBoosters extends JavaPlugin {
     private void registerListeners() {
         boosterItemListener = new BoosterItemListener(this);
         effectBoosterListener = new EffectBoosterListener(this);
+        flyBoosterListener = new FlyBoosterListener(this);
 
         getServer().getPluginManager().registerEvents(boosterItemListener, this);
         getServer().getPluginManager().registerEvents(effectBoosterListener, this);
+        getServer().getPluginManager().registerEvents(flyBoosterListener, this);
         getServer().getPluginManager().registerEvents(new GameEventListener(this), this);
     }
 
@@ -136,5 +140,9 @@ public class GlobalBoosters extends JavaPlugin {
 
     public EffectBoosterListener getEffectBoosterListener() {
         return effectBoosterListener;
+    }
+
+    public FlyBoosterListener getFlyBoosterListener() {
+        return flyBoosterListener;
     }
 }

@@ -42,6 +42,8 @@ public class BoosterManager {
 
         if (type.isEffectBooster()) {
             plugin.getEffectBoosterListener().applyEffectToAll(type);
+        } else if (type == BoosterType.FLY) {
+            plugin.getFlyBoosterListener().enableFlyForAll();
         }
 
         announceBoosterActivation(type, activator.getName(), durationMinutes);
@@ -58,6 +60,8 @@ public class BoosterManager {
 
             if (type.isEffectBooster()) {
                 plugin.getEffectBoosterListener().removeEffectFromAll(type);
+            } else if (type == BoosterType.FLY) {
+                plugin.getFlyBoosterListener().disableFlyForAll();
             }
 
             announceBoosterDeactivation(type);
@@ -93,6 +97,8 @@ public class BoosterManager {
 
         if (booster.getType().isEffectBooster()) {
             plugin.getEffectBoosterListener().applyEffectToAll(booster.getType());
+        } else if (booster.getType() == BoosterType.FLY) {
+            plugin.getFlyBoosterListener().enableFlyForAll();
         }
     }
 
