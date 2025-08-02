@@ -11,6 +11,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,8 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                 return handleGive(sender, args);
             case "reload":
                 return handleReload(sender);
+            case "stats":
+                return handleStats(sender);
             default:
                 sendHelp(sender);
                 return true;
@@ -118,6 +122,54 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleStats(CommandSender sender) {
+        if (!sender.hasPermission("globalboosters.admin.stats")) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
+            return true;
+        }
+
+        sender.sendMessage("");
+        sender.sendMessage("§6§l==== Top 10 Most Used Boosters ====");
+        sender.sendMessage("");
+
+        ResultSet rs = plugin.getDataManager().getTopBoosters(10);
+        if (rs != null) {
+            try {
+                int position = 1;
+                while (rs.next()) {
+                    String boosterType = rs.getString("booster_type");
+                    int usageCount = rs.getInt("usage_count");
+
+                    if (usageCount > 0) {
+                        try {
+                            BoosterType type = BoosterType.valueOf(boosterType);
+                            sender.sendMessage("§e#" + position + " §7- §f" + type.getDisplayName() + " §7- §a" + usageCount + " uses");
+                            position++;
+                        } catch (IllegalArgumentException e) {
+                            continue;
+                        }
+                    }
+                }
+
+                if (position == 1) {
+                    sender.sendMessage("§cNo boosters have been used yet!");
+                }
+
+                rs.close();
+            } catch (SQLException e) {
+                sender.sendMessage("§cError retrieving statistics!");
+                e.printStackTrace();
+            }
+        } else {
+            sender.sendMessage("§cError retrieving statistics!");
+        }
+
+        sender.sendMessage("");
+        sender.sendMessage("§6§l===================================");
+
+        return true;
+    }
+
     private void sendHelp(CommandSender sender) {
         sender.sendMessage("§6§lGlobalBoosters Commands:");
         if (sender.hasPermission("globalboosters.admin.give")) {
@@ -125,6 +177,9 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         }
         if (sender.hasPermission("globalboosters.admin.reload")) {
             sender.sendMessage("§e/booster reload §7- Reload configuration files");
+        }
+        if (sender.hasPermission("globalboosters.admin.stats")) {
+            sender.sendMessage("§e/booster stats §7- View top 10 most used boosters");
         }
     }
 
@@ -137,6 +192,9 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
             }
             if (sender.hasPermission("globalboosters.admin.reload")) {
                 subCommands.add("reload");
+            }
+            if (sender.hasPermission("globalboosters.admin.stats")) {
+                subCommands.add("stats");
             }
             return filterStartingWith(subCommands, args[0]);
         }

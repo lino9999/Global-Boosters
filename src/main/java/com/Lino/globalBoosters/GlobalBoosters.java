@@ -61,6 +61,9 @@ public class GlobalBoosters extends JavaPlugin {
         if (supplyManager != null) {
             supplyManager.shutdown();
         }
+        if (dataManager != null) {
+            dataManager.closeConnection();
+        }
 
         getLogger().info("GlobalBoosters has been disabled!");
     }

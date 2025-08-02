@@ -39,6 +39,7 @@ public class BoosterManager {
 
         plugin.getBossBarManager().createBossBar(booster);
         plugin.getDataManager().saveActiveBooster(booster);
+        plugin.getDataManager().incrementBoosterUsage(type);
 
         if (type.isEffectBooster()) {
             plugin.getEffectBoosterListener().applyEffectToAll(type);

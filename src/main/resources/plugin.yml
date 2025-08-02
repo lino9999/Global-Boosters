@@ -1,5 +1,5 @@
 name: GlobalBoosters
-version: '1.4-BETA'
+version: '1.5-BETA'
 main: com.Lino.globalBoosters.GlobalBoosters
 api-version: '1.21'
 depend: [Vault]
@@ -14,7 +14,7 @@ commands:
     permission: globalboosters.shop
   booster:
     description: Main booster management command
-    usage: /<command> [give/reload]
+    usage: /<command> [give/reload/stats]
     aliases: [boost, gb]
     permission: globalboosters.admin
   globalboosters:
@@ -37,9 +37,13 @@ permissions:
       globalboosters.use: true
       globalboosters.admin.give: true
       globalboosters.admin.reload: true
+      globalboosters.admin.stats: true
   globalboosters.admin.give:
     description: Allows giving boosters to players
     default: op
   globalboosters.admin.reload:
     description: Allows reloading the plugin configuration
+    default: op
+  globalboosters.admin.stats:
+    description: Allows viewing booster statistics
     default: op
