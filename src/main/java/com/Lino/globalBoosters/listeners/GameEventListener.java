@@ -109,14 +109,16 @@ public class GameEventListener implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (plugin.getBoosterManager().isBoosterActive(BoosterType.MOB_DROP)) {
+            double multiplier = plugin.getConfigManager().getBoosterMultiplier(BoosterType.MOB_DROP);
+
             List<ItemStack> drops = event.getDrops();
             for (ItemStack drop : drops) {
                 if (drop != null && drop.getType() != Material.AIR) {
-                    drop.setAmount(drop.getAmount() * 2);
+                    drop.setAmount((int) (drop.getAmount() * multiplier));
                 }
             }
 
-            event.setDroppedExp(event.getDroppedExp() * 2);
+            event.setDroppedExp((int) (event.getDroppedExp() * multiplier));
         }
     }
 
@@ -153,12 +155,13 @@ public class GameEventListener implements Listener {
         if (plugin.getBoosterManager().isBoosterActive(BoosterType.FARMING_FORTUNE)) {
             if (isCrop(block.getType())) {
                 event.setDropItems(false);
+                double multiplier = plugin.getConfigManager().getBoosterMultiplier(BoosterType.FARMING_FORTUNE);
 
                 for (ItemStack drop : block.getDrops(player.getInventory().getItemInMainHand())) {
                     if (drop != null && drop.getType() != Material.AIR) {
-                        ItemStack doubleDrop = drop.clone();
-                        doubleDrop.setAmount(drop.getAmount() * 2);
-                        block.getWorld().dropItemNaturally(block.getLocation(), doubleDrop);
+                        ItemStack multipliedDrop = drop.clone();
+                        multipliedDrop.setAmount((int) (drop.getAmount() * multiplier));
+                        block.getWorld().dropItemNaturally(block.getLocation(), multipliedDrop);
                     }
                 }
             }
