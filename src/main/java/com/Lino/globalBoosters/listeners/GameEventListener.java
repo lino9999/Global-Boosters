@@ -125,15 +125,19 @@ public class GameEventListener implements Listener {
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH &&
                 plugin.getBoosterManager().isBoosterActive(BoosterType.FISHING_LUCK)) {
 
+            double multiplier = plugin.getConfigManager().getBoosterMultiplier(BoosterType.FISHING_LUCK);
+
             Entity caught = event.getCaught();
             if (caught instanceof org.bukkit.entity.Item) {
                 org.bukkit.entity.Item item = (org.bukkit.entity.Item) caught;
                 ItemStack stack = item.getItemStack();
-                stack.setAmount(stack.getAmount() * 2);
+                int newAmount = (int) (stack.getAmount() * multiplier);
+                stack.setAmount(newAmount);
                 item.setItemStack(stack);
             }
 
-            event.setExpToDrop(event.getExpToDrop() * 2);
+            int newExp = (int) (event.getExpToDrop() * multiplier);
+            event.setExpToDrop(newExp);
         }
     }
 

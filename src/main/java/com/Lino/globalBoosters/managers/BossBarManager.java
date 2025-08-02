@@ -4,6 +4,7 @@ import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.ActiveBooster;
 import com.Lino.globalBoosters.boosters.BoosterType;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -72,11 +73,30 @@ public class BossBarManager {
 
     private String formatBossBarTitle(ActiveBooster booster) {
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%booster%", booster.getType().getDisplayName());
+
+        String boosterName = booster.getType().getDisplayName();
+        if (!booster.getType().isEffectBooster() && !isNoMultiplierBooster(booster.getType())) {
+            double multiplier = plugin.getConfigManager().getBoosterMultiplier(booster.getType());
+            boosterName += " &7(" + multiplier + "x)";
+        }
+
+        placeholders.put("%booster%", boosterName);
         placeholders.put("%time%", booster.getTimeRemaining());
         placeholders.put("%player%", booster.getActivatorName());
 
-        return plugin.getMessagesManager().getMessage("bossbar.format", placeholders);
+        return ChatColor.translateAlternateColorCodes('&', plugin.getMessagesManager().getMessage("bossbar.format", placeholders));
+    }
+
+    private boolean isNoMultiplierBooster(BoosterType type) {
+        switch (type) {
+            case NO_FALL_DAMAGE:
+            case KEEP_INVENTORY:
+            case FLY:
+            case PLANT_GROWTH:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private BarColor getBarColor(BoosterType type) {
