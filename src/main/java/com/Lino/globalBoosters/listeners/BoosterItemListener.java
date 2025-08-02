@@ -13,8 +13,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -34,7 +39,8 @@ public class BoosterItemListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK &&
+                event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
             return;
         }
 
@@ -90,6 +96,49 @@ public class BoosterItemListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
 
+        ItemStack clickedItem = event.getCurrentItem();
+        ItemStack cursorItem = event.getCursor();
+
+        if (clickedItem != null && BoosterItem.isBoosterItem(clickedItem)) {
+            if (event.getSlotType() == InventoryType.SlotType.ARMOR ||
+                    event.getSlotType() == InventoryType.SlotType.QUICKBAR && event.getSlot() == 40) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        if (cursorItem != null && BoosterItem.isBoosterItem(cursorItem)) {
+            if (event.getSlotType() == InventoryType.SlotType.ARMOR ||
+                    event.getSlotType() == InventoryType.SlotType.QUICKBAR && event.getSlot() == 40) {
+                event.setCancelled(true);
+                return;
+            }
+
+            InventoryType invType = event.getInventory().getType();
+            if (invType == InventoryType.CRAFTING || invType == InventoryType.WORKBENCH ||
+                    invType == InventoryType.ANVIL || invType == InventoryType.ENCHANTING ||
+                    invType == InventoryType.SMITHING || invType == InventoryType.GRINDSTONE ||
+                    invType == InventoryType.STONECUTTER || invType == InventoryType.LOOM ||
+                    invType == InventoryType.CARTOGRAPHY || invType == InventoryType.BREWING ||
+                    invType == InventoryType.FURNACE || invType == InventoryType.BLAST_FURNACE ||
+                    invType == InventoryType.SMOKER) {
+                if (event.getRawSlot() < event.getInventory().getSize()) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
+        if (event.isShiftClick() && clickedItem != null && BoosterItem.isBoosterItem(clickedItem)) {
+            InventoryType topType = player.getOpenInventory().getTopInventory().getType();
+            if (topType != InventoryType.PLAYER && topType != InventoryType.CREATIVE &&
+                    topType != InventoryType.CHEST && topType != InventoryType.ENDER_CHEST &&
+                    topType != InventoryType.SHULKER_BOX && topType != InventoryType.BARREL) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
         if (event.getInventory().getHolder() != null) {
             return;
         }
@@ -132,6 +181,56 @@ public class BoosterItemListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         plugin.getBossBarManager().addPlayerToBossBars(event.getPlayer());
         plugin.getEffectBoosterListener().applyActiveEffects(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
+
+        if (!BoosterItem.isBoosterItem(event.getOldCursor())) {
+            return;
+        }
+
+        InventoryType invType = event.getInventory().getType();
+        if (invType == InventoryType.CRAFTING || invType == InventoryType.WORKBENCH ||
+                invType == InventoryType.ANVIL || invType == InventoryType.ENCHANTING ||
+                invType == InventoryType.SMITHING || invType == InventoryType.GRINDSTONE ||
+                invType == InventoryType.STONECUTTER || invType == InventoryType.LOOM ||
+                invType == InventoryType.CARTOGRAPHY || invType == InventoryType.BREWING ||
+                invType == InventoryType.FURNACE || invType == InventoryType.BLAST_FURNACE ||
+                invType == InventoryType.SMOKER) {
+
+            for (int slot : event.getRawSlots()) {
+                if (slot < event.getInventory().getSize()) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
+        for (int slot : event.getRawSlots()) {
+            if (slot >= 5 && slot <= 8) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
+        if (BoosterItem.isBoosterItem(event.getMainHandItem()) ||
+                BoosterItem.isBoosterItem(event.getOffHandItem())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        if (BoosterItem.isBoosterItem(event.getPlayerItem())) {
+            event.setCancelled(true);
+        }
     }
 
     public void registerShopGUI(Player player, BoosterShopGUI gui) {

@@ -5,91 +5,114 @@
 # Set to -1 for unlimited
 max_active_boosters: 3
 
-# Limited Supply Mode - If enabled, each booster can only be purchased 10 times every 24 hours
-limited_supply_mode: true
+# Limited Supply Mode - If enabled, each booster can only be purchased limited times until reset
+limited_supply_mode: false
+
+# Max supply per booster before reset (default: 10)
+max_supply_per_booster: 10
 
 # Hour of day when supply resets (0-23, where 0 = midnight, 12 = noon, 23 = 11 PM)
 supply_reset_hour: 0
 
 boosters:
   plant_growth:
+    enabled: true
     price: 500.0
     duration: 30  # minutes
   spawner_rate:
+    enabled: true
     price: 1500.0
     duration: 30
     multiplier: 2.0
   exp_multiplier:
+    enabled: true
     price: 1000.0
     duration: 30
     multiplier: 2.0
   mob_drop:
+    enabled: true
     price: 1200.0
     duration: 30
     multiplier: 2.0
   mining_speed:
+    enabled: true
     price: 800.0
     duration: 30
     multiplier: 1.5
   fishing_luck:
+    enabled: true
     price: 600.0
     duration: 30
     multiplier: 2.0
   farming_fortune:
+    enabled: true
     price: 700.0
     duration: 30
     multiplier: 2.0
   combat_damage:
+    enabled: true
     price: 2000.0
     duration: 30
     multiplier: 1.5
   haste:
+    enabled: true
     price: 1000.0
     duration: 30
     multiplier: 2.0  # Haste level (1.0 = Haste I, 2.0 = Haste II)
   resistance:
+    enabled: true
     price: 1500.0
     duration: 30
     multiplier: 2.0  # Resistance level
   jump_boost:
+    enabled: true
     price: 800.0
     duration: 30
     multiplier: 2.0  # Jump Boost level
   regeneration:
+    enabled: true
     price: 2000.0
     duration: 30
     multiplier: 1.0  # Regeneration level
   night_vision:
+    enabled: true
     price: 600.0
     duration: 30
     multiplier: 1.0  # Night Vision doesn't have levels
   fire_resistance:
+    enabled: true
     price: 1200.0
     duration: 30
     multiplier: 1.0  # Fire Resistance doesn't have levels
   speed:
+    enabled: true
     price: 1000.0
     duration: 30
     multiplier: 2.0  # Speed level
   strength:
+    enabled: true
     price: 2500.0
     duration: 30
     multiplier: 2.0  # Strength level
   no_fall_damage:
+    enabled: true
     price: 800.0
     duration: 30
   hunger_saver:
+    enabled: true
     price: 600.0
     duration: 30
     multiplier: 0.5  # 50% chance to not lose hunger
   armor_durability:
+    enabled: true
     price: 1200.0
     duration: 30
     multiplier: 0.5  # 50% chance armor doesn't take damage
   keep_inventory:
+    enabled: true
     price: 3000.0
     duration: 30
   fly:
+    enabled: true
     price: 2500.0
     duration: 30
-    multiplier: 1.0  # Regeneration level

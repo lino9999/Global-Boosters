@@ -61,6 +61,9 @@ booster:
 bossbar:
   format: "&e%booster% &7- &a%time% &7sponsored by &b%player%"
 
+supply:
+  restocked: "%prefix%&aThe booster shop has been restocked! All boosters are now available for purchase again!"
+
 effects:
   plant_growth: "&7• &fDoubles crop growth speed"
   spawner_rate: "&7• &fDoubles spawner spawn rate"

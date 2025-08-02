@@ -48,8 +48,13 @@ public class BoosterShopGUI {
         fillDecoration();
 
         BoosterType[] types = BoosterType.values();
-        for (int i = 0; i < types.length && i < BOOSTER_SLOTS.length; i++) {
-            inventory.setItem(BOOSTER_SLOTS[i], createBoosterItem(types[i]));
+        int slotIndex = 0;
+
+        for (int i = 0; i < types.length && slotIndex < BOOSTER_SLOTS.length; i++) {
+            if (plugin.getConfigManager().isBoosterEnabled(types[i])) {
+                inventory.setItem(BOOSTER_SLOTS[slotIndex], createBoosterItem(types[i]));
+                slotIndex++;
+            }
         }
     }
 
@@ -153,11 +158,19 @@ public class BoosterShopGUI {
             }
         }
 
-        if (boosterIndex == -1 || boosterIndex >= BoosterType.values().length) {
+        if (boosterIndex == -1) {
             return;
         }
 
-        BoosterType type = BoosterType.values()[boosterIndex];
+        BoosterType[] enabledTypes = Arrays.stream(BoosterType.values())
+                .filter(type -> plugin.getConfigManager().isBoosterEnabled(type))
+                .toArray(BoosterType[]::new);
+
+        if (boosterIndex >= enabledTypes.length) {
+            return;
+        }
+
+        BoosterType type = enabledTypes[boosterIndex];
 
         if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
             if (!plugin.getSupplyManager().canPurchase(type)) {

@@ -2,6 +2,10 @@ package com.Lino.globalBoosters.managers;
 
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -16,15 +20,17 @@ public class SupplyManager {
     private final Map<BoosterType, Integer> purchaseCounts;
     private final Map<BoosterType, Long> lastResetTime;
     private Connection connection;
-    private static final int MAX_PURCHASES = 10;
+    private final int maxPurchases;
 
     public SupplyManager(GlobalBoosters plugin) {
         this.plugin = plugin;
         this.purchaseCounts = new ConcurrentHashMap<>();
         this.lastResetTime = new ConcurrentHashMap<>();
+        this.maxPurchases = plugin.getConfigManager().getMaxSupplyPerBooster();
 
         initializeDatabase();
         loadData();
+        startResetTask();
     }
 
     private void initializeDatabase() {
@@ -95,7 +101,8 @@ public class SupplyManager {
 
         checkAndResetIfNeeded(type);
         int currentCount = purchaseCounts.get(type);
-        return currentCount < MAX_PURCHASES;
+        plugin.getLogger().info("Supply check for " + type.name() + ": " + currentCount + "/" + maxPurchases);
+        return currentCount < maxPurchases;
     }
 
     public synchronized int getRemainingPurchases(BoosterType type) {
@@ -104,7 +111,7 @@ public class SupplyManager {
         }
 
         checkAndResetIfNeeded(type);
-        int remaining = MAX_PURCHASES - purchaseCounts.get(type);
+        int remaining = maxPurchases - purchaseCounts.get(type);
         return Math.max(0, remaining);
     }
 
@@ -116,12 +123,14 @@ public class SupplyManager {
         checkAndResetIfNeeded(type);
 
         int currentCount = purchaseCounts.get(type);
-        if (currentCount >= MAX_PURCHASES) {
+        if (currentCount >= maxPurchases) {
+            plugin.getLogger().warning("Attempted to purchase " + type.name() + " but supply is exhausted!");
             return false;
         }
 
         purchaseCounts.put(type, currentCount + 1);
         saveBoosterData(type);
+        plugin.getLogger().info("Purchase recorded for " + type.name() + ": " + (currentCount + 1) + "/" + maxPurchases);
         return true;
     }
 
@@ -157,6 +166,46 @@ public class SupplyManager {
             lastResetTime.put(type, currentTime);
             saveBoosterData(type);
         }
+    }
+
+    private void resetAllSupplies() {
+        boolean wasReset = false;
+
+        for (BoosterType type : BoosterType.values()) {
+            if (purchaseCounts.get(type) > 0) {
+                wasReset = true;
+            }
+            purchaseCounts.put(type, 0);
+            lastResetTime.put(type, System.currentTimeMillis());
+            saveBoosterData(type);
+        }
+
+        if (wasReset) {
+            announceRestock();
+        }
+    }
+
+    private void announceRestock() {
+        String message = plugin.getMessagesManager().getMessage("supply.restocked");
+        Bukkit.broadcastMessage(message);
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
+        }
+    }
+
+    private void startResetTask() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                long currentTime = System.currentTimeMillis();
+                long nextReset = getNextResetTime();
+
+                if (currentTime >= nextReset) {
+                    resetAllSupplies();
+                }
+            }
+        }.runTaskTimer(plugin, 200L, 200L);
     }
 
     private long getNextResetTime() {

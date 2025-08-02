@@ -122,13 +122,15 @@ public class GameEventListener implements Listener {
 
         if (plugin.getBoosterManager().isBoosterActive(BoosterType.FARMING_FORTUNE)) {
             if (isCrop(block.getType())) {
+                event.setDropItems(false);
+
                 for (ItemStack drop : block.getDrops(player.getInventory().getItemInMainHand())) {
                     if (drop != null && drop.getType() != Material.AIR) {
-                        drop.setAmount(drop.getAmount() * 2);
-                        block.getWorld().dropItemNaturally(block.getLocation(), drop);
+                        ItemStack doubleDrop = drop.clone();
+                        doubleDrop.setAmount(drop.getAmount() * 2);
+                        block.getWorld().dropItemNaturally(block.getLocation(), doubleDrop);
                     }
                 }
-                event.setDropItems(false);
             }
         }
     }

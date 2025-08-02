@@ -13,15 +13,18 @@ public class ConfigManager {
     private final Map<BoosterType, Double> boosterPrices;
     private final Map<BoosterType, Integer> boosterDurations;
     private final Map<BoosterType, Double> boosterMultipliers;
+    private final Map<BoosterType, Boolean> boosterEnabled;
     private int maxActiveBoosters;
     private boolean limitedSupplyEnabled;
     private int resetHour;
+    private int maxSupplyPerBooster;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
         this.boosterPrices = new HashMap<>();
         this.boosterDurations = new HashMap<>();
         this.boosterMultipliers = new HashMap<>();
+        this.boosterEnabled = new HashMap<>();
 
         loadConfig();
     }
@@ -33,10 +36,14 @@ public class ConfigManager {
         maxActiveBoosters = config.getInt("max_active_boosters", 3);
         limitedSupplyEnabled = config.getBoolean("limited_supply_mode", false);
         resetHour = config.getInt("supply_reset_hour", 0);
+        maxSupplyPerBooster = config.getInt("max_supply_per_booster", 10);
 
         for (BoosterType type : BoosterType.values()) {
             String path = "boosters." + type.name().toLowerCase();
 
+            if (!config.contains(path + ".enabled")) {
+                config.set(path + ".enabled", true);
+            }
             if (!config.contains(path + ".price")) {
                 config.set(path + ".price", getDefaultPrice(type));
             }
@@ -44,6 +51,7 @@ public class ConfigManager {
                 config.set(path + ".duration", 30);
             }
 
+            boosterEnabled.put(type, config.getBoolean(path + ".enabled", true));
             boosterPrices.put(type, config.getDouble(path + ".price"));
             boosterDurations.put(type, config.getInt(path + ".duration"));
 
@@ -82,6 +90,14 @@ public class ConfigManager {
         return resetHour;
     }
 
+    public boolean isBoosterEnabled(BoosterType type) {
+        return boosterEnabled.getOrDefault(type, true);
+    }
+
+    public int getMaxSupplyPerBooster() {
+        return maxSupplyPerBooster;
+    }
+
     private boolean isNoMultiplierBooster(BoosterType type) {
         switch (type) {
             case NO_FALL_DAMAGE:
@@ -98,6 +114,7 @@ public class ConfigManager {
         boosterPrices.clear();
         boosterDurations.clear();
         boosterMultipliers.clear();
+        boosterEnabled.clear();
         loadConfig();
     }
 
