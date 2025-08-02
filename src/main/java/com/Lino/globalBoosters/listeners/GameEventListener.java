@@ -3,12 +3,14 @@ package com.Lino.globalBoosters.listeners;
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
 import org.bukkit.GameRule;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,11 +66,35 @@ public class GameEventListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onSpawnerSpawn(SpawnerSpawnEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (plugin.getBoosterManager().isBoosterActive(BoosterType.SPAWNER_RATE)) {
-            CreatureSpawner spawner = event.getSpawner();
-            spawner.setDelay(spawner.getDelay() / 2);
+            double multiplier = plugin.getConfigManager().getBoosterMultiplier(BoosterType.SPAWNER_RATE);
+            int extraMobs = (int) (multiplier - 1);
+
+            if (extraMobs > 0) {
+                Entity spawnedEntity = event.getEntity();
+                EntityType entityType = spawnedEntity.getType();
+                Location spawnLocation = spawnedEntity.getLocation();
+
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    for (int i = 0; i < extraMobs; i++) {
+                        double offsetX = (random.nextDouble() - 0.5) * 2;
+                        double offsetZ = (random.nextDouble() - 0.5) * 2;
+                        Location newLocation = spawnLocation.clone().add(offsetX, 0, offsetZ);
+
+                        Entity newEntity = spawnLocation.getWorld().spawnEntity(newLocation, entityType);
+                        if (newEntity instanceof LivingEntity) {
+                            LivingEntity newLiving = (LivingEntity) newEntity;
+                            newLiving.setMetadata("spawner_boosted", new FixedMetadataValue(plugin, true));
+                        }
+                    }
+                }, 1L);
+            }
         }
     }
 
