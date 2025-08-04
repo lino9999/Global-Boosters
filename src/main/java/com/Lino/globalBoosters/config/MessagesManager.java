@@ -1,6 +1,7 @@
 package com.Lino.globalBoosters.config;
 
 import com.Lino.globalBoosters.GlobalBoosters;
+import com.Lino.globalBoosters.utils.GradientColor;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -67,6 +68,9 @@ public class MessagesManager {
     }
 
     private String colorize(String message) {
+        // First apply gradient colors
+        message = GradientColor.apply(message);
+        // Then apply standard color codes
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 }
