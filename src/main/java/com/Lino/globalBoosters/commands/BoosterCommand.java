@@ -3,6 +3,8 @@ package com.Lino.globalBoosters.commands;
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
 import com.Lino.globalBoosters.items.BoosterItem;
+import com.Lino.globalBoosters.gui.BoosterShopGUI;
+import com.Lino.globalBoosters.utils.GradientColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -40,6 +42,8 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                 return handleReload(sender);
             case "stats":
                 return handleStats(sender);
+            case "shop":
+                return handleShop(sender);
             default:
                 sendHelp(sender);
                 return true;
@@ -53,13 +57,13 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length < 3) {
-            sender.sendMessage("§cUsage: /booster give <player> <booster_type> [duration]");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.usage-give"));
             return true;
         }
 
         Player target = Bukkit.getPlayer(args[1]);
         if (target == null) {
-            sender.sendMessage("§cPlayer not found!");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.player-not-found"));
             return true;
         }
 
@@ -67,9 +71,9 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         try {
             type = BoosterType.valueOf(args[2].toUpperCase());
         } catch (IllegalArgumentException e) {
-            sender.sendMessage("§cInvalid booster type! Available types:");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.invalid-booster"));
             for (BoosterType boosterType : BoosterType.values()) {
-                sender.sendMessage("§7- §e" + boosterType.name().toLowerCase());
+                sender.sendMessage(GradientColor.apply("<gradient:#808080:#A9A9A9>- </gradient><gradient:#FFA500:#FFD700>" + boosterType.name().toLowerCase() + "</gradient>"));
             }
             return true;
         }
@@ -79,11 +83,11 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
             try {
                 duration = Integer.parseInt(args[3]);
                 if (duration <= 0) {
-                    sender.sendMessage("§cDuration must be a positive number!");
+                    sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.duration-positive"));
                     return true;
                 }
             } catch (NumberFormatException e) {
-                sender.sendMessage("§cInvalid duration! Must be a number.");
+                sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.invalid-duration"));
                 return true;
             }
         }
@@ -98,12 +102,12 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         }
 
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%booster%", type.getDisplayName());
+        placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
         placeholders.put("%player%", target.getName());
         placeholders.put("%duration%", String.valueOf(duration));
 
-        sender.sendMessage("§aGave " + target.getName() + " a " + type.getDisplayName() + " for " + duration + " minutes!");
-        target.sendMessage("§aYou received a " + type.getDisplayName() + " for " + duration + " minutes!");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.gave-booster", placeholders));
+        target.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.received-booster", placeholders));
 
         return true;
     }
@@ -122,6 +126,22 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleShop(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("general.player-only"));
+            return true;
+        }
+
+        Player player = (Player) sender;
+        if (!player.hasPermission("globalboosters.shop")) {
+            player.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
+            return true;
+        }
+
+        new BoosterShopGUI(plugin, player).open();
+        return true;
+    }
+
     private boolean handleStats(CommandSender sender) {
         if (!sender.hasPermission("globalboosters.admin.stats")) {
             sender.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
@@ -129,7 +149,7 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage("");
-        sender.sendMessage("§6§l==== Top 10 Most Used Boosters ====");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.stats.header"));
         sender.sendMessage("");
 
         ResultSet rs = plugin.getDataManager().getTopBoosters(10);
@@ -143,7 +163,12 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                     if (usageCount > 0) {
                         try {
                             BoosterType type = BoosterType.valueOf(boosterType);
-                            sender.sendMessage("§e#" + position + " §7- §f" + type.getDisplayName() + " §7- §a" + usageCount + " uses");
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("%position%", String.valueOf(position));
+                            placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
+                            placeholders.put("%count%", String.valueOf(usageCount));
+
+                            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.stats.entry", placeholders));
                             position++;
                         } catch (IllegalArgumentException e) {
                             continue;
@@ -152,34 +177,35 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                 }
 
                 if (position == 1) {
-                    sender.sendMessage("§cNo boosters have been used yet!");
+                    sender.sendMessage(plugin.getMessagesManager().getMessage("commands.stats.no-data"));
                 }
 
                 rs.close();
             } catch (SQLException e) {
-                sender.sendMessage("§cError retrieving statistics!");
+                sender.sendMessage(plugin.getMessagesManager().getMessage("commands.stats.error"));
                 e.printStackTrace();
             }
         } else {
-            sender.sendMessage("§cError retrieving statistics!");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.stats.error"));
         }
 
         sender.sendMessage("");
-        sender.sendMessage("§6§l===================================");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.stats.footer"));
 
         return true;
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage("§6§lGlobalBoosters Commands:");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.help-header"));
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-shop"));
         if (sender.hasPermission("globalboosters.admin.give")) {
-            sender.sendMessage("§e/booster give <player> <booster_type> [duration] §7- Give a booster to a player");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-give"));
         }
         if (sender.hasPermission("globalboosters.admin.reload")) {
-            sender.sendMessage("§e/booster reload §7- Reload configuration files");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-reload"));
         }
         if (sender.hasPermission("globalboosters.admin.stats")) {
-            sender.sendMessage("§e/booster stats §7- View top 10 most used boosters");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-stats"));
         }
     }
 
@@ -187,6 +213,7 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             List<String> subCommands = new ArrayList<>();
+            subCommands.add("shop");
             if (sender.hasPermission("globalboosters.admin.give")) {
                 subCommands.add("give");
             }

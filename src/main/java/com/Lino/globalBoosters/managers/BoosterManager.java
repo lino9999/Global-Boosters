@@ -130,7 +130,7 @@ public class BoosterManager {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%prefix%", plugin.getMessagesManager().getPrefix());
         placeholders.put("%player%", activatorName);
-        placeholders.put("%booster%", type.getDisplayName());
+        placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
         placeholders.put("%duration%", String.valueOf(durationMinutes));
 
         String message = plugin.getMessagesManager().getMessage("booster.activated", placeholders);
@@ -140,7 +140,7 @@ public class BoosterManager {
     private void announceBoosterDeactivation(BoosterType type) {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%prefix%", plugin.getMessagesManager().getPrefix());
-        placeholders.put("%booster%", type.getDisplayName());
+        placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
 
         String message = plugin.getMessagesManager().getMessage("booster.expired", placeholders);
         Bukkit.broadcastMessage(message);

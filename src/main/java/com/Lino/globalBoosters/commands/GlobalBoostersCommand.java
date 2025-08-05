@@ -3,9 +3,13 @@ package com.Lino.globalBoosters.commands;
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.ActiveBooster;
 import com.Lino.globalBoosters.boosters.BoosterType;
+import com.Lino.globalBoosters.utils.GradientColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GlobalBoostersCommand implements CommandExecutor {
 
@@ -33,48 +37,73 @@ public class GlobalBoostersCommand implements CommandExecutor {
 
     private void sendHelp(CommandSender sender) {
         sender.sendMessage("");
-        sender.sendMessage("§6§l==== GlobalBoosters Help ====");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.header"));
         sender.sendMessage("");
-        sender.sendMessage("§e/boostshop §7- Open the booster shop");
-        sender.sendMessage("§e/globalboosters help §7- Show this help message");
-        sender.sendMessage("§e/globalboosters list §7- List all active boosters");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.boostshop"));
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.globalboosters-help"));
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.globalboosters-list"));
 
         if (sender.hasPermission("globalboosters.admin")) {
             sender.sendMessage("");
-            sender.sendMessage("§c§lAdmin Commands:");
-            sender.sendMessage("§e/booster give <player> <type> [duration] §7- Give a booster");
-            sender.sendMessage("§e/booster reload §7- Reload configuration");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.admin-header"));
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-give"));
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-reload"));
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-stats"));
         }
 
         sender.sendMessage("");
-        sender.sendMessage("§6§lAvailable Boosters:");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.available-boosters"));
         sender.sendMessage("");
 
         for (BoosterType type : BoosterType.values()) {
-            String multiplier = type.isEffectBooster() ? "" : " §7(" + plugin.getConfigManager().getBoosterMultiplier(type) + "x)";
-            sender.sendMessage("§e" + type.name().toLowerCase() + " §7- " + type.getDisplayName() + multiplier);
+            String boosterName = plugin.getMessagesManager().getBoosterName(type);
+            String multiplier = "";
+            if (!type.isEffectBooster() && !isNoMultiplierBooster(type)) {
+                multiplier = GradientColor.apply(" <gradient:#808080:#A9A9A9>(" + plugin.getConfigManager().getBoosterMultiplier(type) + "x)</gradient>");
+            }
+            String typeName = GradientColor.apply("<gradient:#FFA500:#FFD700>" + type.name().toLowerCase() + "</gradient>");
+            String separator = GradientColor.apply("<gradient:#808080:#A9A9A9> - </gradient>");
+            sender.sendMessage(typeName + separator + boosterName + multiplier);
         }
 
         sender.sendMessage("");
-        sender.sendMessage("§6§l=========================");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.footer"));
     }
 
     private void sendActiveBoostersList(CommandSender sender) {
         sender.sendMessage("");
-        sender.sendMessage("§6§l==== Active Boosters ====");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.list.header"));
         sender.sendMessage("");
 
         if (plugin.getBoosterManager().getActiveBoosters().isEmpty()) {
-            sender.sendMessage("§cNo boosters are currently active!");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.list.no-active"));
         } else {
             for (ActiveBooster booster : plugin.getBoosterManager().getActiveBoosters()) {
-                sender.sendMessage("§e" + booster.getType().getDisplayName());
-                sender.sendMessage("  §7Activated by: §f" + booster.getActivatorName());
-                sender.sendMessage("  §7Time remaining: §f" + booster.getTimeRemaining());
+                String boosterName = plugin.getMessagesManager().getBoosterName(booster.getType());
+                sender.sendMessage(boosterName);
+
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("%player%", booster.getActivatorName());
+                placeholders.put("%time%", booster.getTimeRemaining());
+
+                sender.sendMessage("  " + plugin.getMessagesManager().getMessage("commands.list.activated-by", placeholders));
+                sender.sendMessage("  " + plugin.getMessagesManager().getMessage("commands.list.time-remaining", placeholders));
                 sender.sendMessage("");
             }
         }
 
-        sender.sendMessage("§6§l========================");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.list.footer"));
+    }
+
+    private boolean isNoMultiplierBooster(BoosterType type) {
+        switch (type) {
+            case NO_FALL_DAMAGE:
+            case KEEP_INVENTORY:
+            case FLY:
+            case PLANT_GROWTH:
+                return true;
+            default:
+                return false;
+        }
     }
 }

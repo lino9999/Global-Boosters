@@ -19,7 +19,7 @@ public class BoosterItem {
     public static ItemStack createBoosterItem(BoosterType type, int durationMinutes) {
         GlobalBoosters plugin = GlobalBoosters.getInstance();
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%booster%", type.getDisplayName());
+        placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
         placeholders.put("%duration%", String.valueOf(durationMinutes));
 
         List<String> lore = new ArrayList<>(Arrays.asList(

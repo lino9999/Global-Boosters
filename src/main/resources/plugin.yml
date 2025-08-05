@@ -1,5 +1,5 @@
 name: GlobalBoosters
-version: '1.6-BETA'
+version: '2.0-BETA'
 main: com.Lino.globalBoosters.GlobalBoosters
 api-version: '1.21'
 depend: [Vault]
@@ -47,3 +47,8 @@ permissions:
   globalboosters.admin.stats:
     description: Allows viewing booster statistics
     default: op
+  boostshop:
+    description: Open the booster shop GUI
+    usage: /<command>
+    aliases: [bs, boostershop]
+    permission: globalboosters.shop

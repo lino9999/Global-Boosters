@@ -60,7 +60,7 @@ public class BoosterShopGUI {
 
     private void fillDecoration() {
         ItemStack decorationItem = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE)
-                .setDisplayName("§7")
+                .setDisplayName(" ")
                 .build();
 
         for (int slot : DECORATION_SLOTS) {
@@ -121,7 +121,7 @@ public class BoosterShopGUI {
         }
 
         return new ItemBuilder(icon)
-                .setDisplayName("§6" + type.getDisplayName())
+                .setDisplayName(plugin.getMessagesManager().getBoosterName(type))
                 .setLore(lore)
                 .addGlow(true)
                 .build();
@@ -175,7 +175,7 @@ public class BoosterShopGUI {
         if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
             if (!plugin.getSupplyManager().canPurchase(type)) {
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("%booster%", type.getDisplayName());
+                placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
                 player.sendMessage(plugin.getMessagesManager().getMessage("purchase.out-of-stock", placeholders));
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;

@@ -3,42 +3,40 @@ package com.Lino.globalBoosters.boosters;
 import org.bukkit.Material;
 
 public enum BoosterType {
-    PLANT_GROWTH("Plant Growth Booster", Material.WHEAT, 2.0, false),
-    SPAWNER_RATE("Spawner Rate Booster", Material.SPAWNER, 2.0, false),
-    EXP_MULTIPLIER("Experience Booster", Material.EXPERIENCE_BOTTLE, 2.0, false),
-    MOB_DROP("Mob Drop Booster", Material.ROTTEN_FLESH, 2.0, false),
-    MINING_SPEED("Mining Speed Booster", Material.DIAMOND_PICKAXE, 1.5, false),
-    FISHING_LUCK("Fishing Luck Booster", Material.FISHING_ROD, 2.0, false),
-    FARMING_FORTUNE("Farming Fortune Booster", Material.GOLDEN_HOE, 2.0, false),
-    COMBAT_DAMAGE("Combat Damage Booster", Material.DIAMOND_SWORD, 1.5, false),
-    HASTE("Haste Booster", Material.GOLDEN_PICKAXE, 1.0, true),
-    RESISTANCE("Resistance Booster", Material.SHIELD, 1.0, true),
-    JUMP_BOOST("Jump Boost Booster", Material.RABBIT_FOOT, 1.0, true),
-    REGENERATION("Regeneration Booster", Material.GOLDEN_APPLE, 1.0, true),
-    NIGHT_VISION("Night Vision Booster", Material.GOLDEN_CARROT, 1.0, true),
-    FIRE_RESISTANCE("Fire Resistance Booster", Material.MAGMA_CREAM, 1.0, true),
-    SPEED("Speed Booster", Material.SUGAR, 1.0, true),
-    STRENGTH("Strength Booster", Material.BLAZE_POWDER, 1.0, true),
-    NO_FALL_DAMAGE("No Fall Damage Booster", Material.FEATHER, 1.0, false),
-    HUNGER_SAVER("Hunger Saver Booster", Material.COOKED_BEEF, 0.5, false),
-    ARMOR_DURABILITY("Armor Durability Booster", Material.ANVIL, 0.5, false),
-    KEEP_INVENTORY("Keep Inventory Booster", Material.ENDER_CHEST, 1.0, false),
-    FLY("Fly Booster", Material.ELYTRA, 1.0, false);
+    PLANT_GROWTH(Material.WHEAT, 2.0, false),
+    SPAWNER_RATE(Material.SPAWNER, 2.0, false),
+    EXP_MULTIPLIER(Material.EXPERIENCE_BOTTLE, 2.0, false),
+    MOB_DROP(Material.ROTTEN_FLESH, 2.0, false),
+    MINING_SPEED(Material.DIAMOND_PICKAXE, 1.5, false),
+    FISHING_LUCK(Material.FISHING_ROD, 2.0, false),
+    FARMING_FORTUNE(Material.GOLDEN_HOE, 2.0, false),
+    COMBAT_DAMAGE(Material.DIAMOND_SWORD, 1.5, false),
+    HASTE(Material.GOLDEN_PICKAXE, 1.0, true),
+    RESISTANCE(Material.SHIELD, 1.0, true),
+    JUMP_BOOST(Material.RABBIT_FOOT, 1.0, true),
+    REGENERATION(Material.GOLDEN_APPLE, 1.0, true),
+    NIGHT_VISION(Material.GOLDEN_CARROT, 1.0, true),
+    FIRE_RESISTANCE(Material.MAGMA_CREAM, 1.0, true),
+    SPEED(Material.SUGAR, 1.0, true),
+    STRENGTH(Material.BLAZE_POWDER, 1.0, true),
+    NO_FALL_DAMAGE(Material.FEATHER, 1.0, false),
+    HUNGER_SAVER(Material.COOKED_BEEF, 0.5, false),
+    ARMOR_DURABILITY(Material.ANVIL, 0.5, false),
+    KEEP_INVENTORY(Material.ENDER_CHEST, 1.0, false),
+    FLY(Material.ELYTRA, 1.0, false);
 
-    private final String displayName;
     private final Material icon;
     private final double defaultMultiplier;
     private final boolean isEffectBooster;
 
-    BoosterType(String displayName, Material icon, double defaultMultiplier, boolean isEffectBooster) {
-        this.displayName = displayName;
+    BoosterType(Material icon, double defaultMultiplier, boolean isEffectBooster) {
         this.icon = icon;
         this.defaultMultiplier = defaultMultiplier;
         this.isEffectBooster = isEffectBooster;
     }
 
     public String getDisplayName() {
-        return displayName;
+        return name().replace("_", " ").toLowerCase().replace("exp", "experience");
     }
 
     public Material getIcon() {
