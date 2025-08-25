@@ -5,8 +5,11 @@ import com.Lino.globalBoosters.boosters.BoosterType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -39,6 +42,34 @@ public class EffectBoosterListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         applyActiveEffects(player);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (plugin.getConfigManager().isKeepEffectsOnDeath()) {
+            Player player = event.getPlayer();
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                applyActiveEffects(player);
+                if (plugin.getBoosterManager().isBoosterActive(BoosterType.FLY)) {
+                    if (!player.getAllowFlight()) {
+                        player.setAllowFlight(true);
+                        player.setFlying(true);
+                    }
+                }
+            }, 1L);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (!plugin.getConfigManager().isKeepEffectsOnDeath()) {
+            Player player = event.getEntity();
+            for (Map.Entry<BoosterType, PotionEffectType> entry : effectMap.entrySet()) {
+                if (plugin.getBoosterManager().isBoosterActive(entry.getKey())) {
+                    player.removePotionEffect(entry.getValue());
+                }
+            }
+        }
     }
 
     public void applyActiveEffects(Player player) {

@@ -18,6 +18,7 @@ public class ConfigManager {
     private boolean limitedSupplyEnabled;
     private int resetHour;
     private int maxSupplyPerBooster;
+    private boolean keepEffectsOnDeath;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -37,6 +38,7 @@ public class ConfigManager {
         limitedSupplyEnabled = config.getBoolean("limited_supply_mode", false);
         resetHour = config.getInt("supply_reset_hour", 0);
         maxSupplyPerBooster = config.getInt("max_supply_per_booster", 10);
+        keepEffectsOnDeath = config.getBoolean("keep_effects_on_death", true);
 
         for (BoosterType type : BoosterType.values()) {
             String path = "boosters." + type.name().toLowerCase();
@@ -96,6 +98,10 @@ public class ConfigManager {
 
     public int getMaxSupplyPerBooster() {
         return maxSupplyPerBooster;
+    }
+
+    public boolean isKeepEffectsOnDeath() {
+        return keepEffectsOnDeath;
     }
 
     private boolean isNoMultiplierBooster(BoosterType type) {

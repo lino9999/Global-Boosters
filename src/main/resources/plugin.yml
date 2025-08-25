@@ -1,5 +1,5 @@
 name: GlobalBoosters
-version: '2.0-BETA'
+version: '2.1-BETA'
 main: com.Lino.globalBoosters.GlobalBoosters
 api-version: '1.21'
 depend: [Vault]
@@ -29,6 +29,69 @@ permissions:
   globalboosters.use:
     description: Allows using booster items
     default: true
+  globalboosters.use.plant_growth:
+    description: Allows using Plant Growth booster
+    default: false
+  globalboosters.use.spawner_rate:
+    description: Allows using Spawner Rate booster
+    default: false
+  globalboosters.use.exp_multiplier:
+    description: Allows using Experience booster
+    default: false
+  globalboosters.use.mob_drop:
+    description: Allows using Mob Drop booster
+    default: false
+  globalboosters.use.mining_speed:
+    description: Allows using Mining Speed booster
+    default: false
+  globalboosters.use.fishing_luck:
+    description: Allows using Fishing Luck booster
+    default: false
+  globalboosters.use.farming_fortune:
+    description: Allows using Farming Fortune booster
+    default: false
+  globalboosters.use.combat_damage:
+    description: Allows using Combat Damage booster
+    default: false
+  globalboosters.use.haste:
+    description: Allows using Haste booster
+    default: false
+  globalboosters.use.resistance:
+    description: Allows using Resistance booster
+    default: false
+  globalboosters.use.jump_boost:
+    description: Allows using Jump Boost booster
+    default: false
+  globalboosters.use.regeneration:
+    description: Allows using Regeneration booster
+    default: false
+  globalboosters.use.night_vision:
+    description: Allows using Night Vision booster
+    default: false
+  globalboosters.use.fire_resistance:
+    description: Allows using Fire Resistance booster
+    default: false
+  globalboosters.use.speed:
+    description: Allows using Speed booster
+    default: false
+  globalboosters.use.strength:
+    description: Allows using Strength booster
+    default: false
+  globalboosters.use.no_fall_damage:
+    description: Allows using No Fall Damage booster
+    default: false
+  globalboosters.use.hunger_saver:
+    description: Allows using Hunger Saver booster
+    default: false
+  globalboosters.use.armor_durability:
+    description: Allows using Armor Durability booster
+    default: false
+  globalboosters.use.keep_inventory:
+    description: Allows using Keep Inventory booster
+    default: false
+  globalboosters.use.fly:
+    description: Allows using Fly booster
+    default: false
   globalboosters.admin:
     description: Admin permission for all features
     default: op
@@ -47,8 +110,6 @@ permissions:
   globalboosters.admin.stats:
     description: Allows viewing booster statistics
     default: op
-  boostshop:
-    description: Open the booster shop GUI
-    usage: /<command>
-    aliases: [bs, boostershop]
-    permission: globalboosters.shop
+  globalboosters.fly.bypass:
+    description: Keeps flight ability when fly booster expires
+    default: op

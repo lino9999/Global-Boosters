@@ -7,6 +7,7 @@ general:
   no-permission: "<gradient:#FF0000:#FF6B6B>✖ You don't have permission to use this command!</gradient>"
   player-only: "<gradient:#FF0000:#FF6B6B>✖ This command can only be used by players!</gradient>"
   no-permission-use: "<gradient:#FF0000:#FF6B6B>✖ You don't have permission to use boosters!</gradient>"
+  no-permission-booster: "<gradient:#FF0000:#FF6B6B>✖ You don't have permission to use %booster%!</gradient>"
   reload-success: "<gradient:#00FF00:#32CD32>✔ Configuration and messages reloaded successfully!</gradient>"
 
 booster-names:

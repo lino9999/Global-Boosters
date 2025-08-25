@@ -5,6 +5,10 @@
 # Set to -1 for unlimited
 max_active_boosters: 3
 
+# Keep booster effects after player death
+# If true, effects will be reapplied when player respawns
+keep_effects_on_death: true
+
 # Limited Supply Mode - If enabled, each booster can only be purchased limited times until reset
 limited_supply_mode: false
 
