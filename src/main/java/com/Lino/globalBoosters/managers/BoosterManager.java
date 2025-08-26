@@ -14,6 +14,7 @@ public class BoosterManager {
 
     private final GlobalBoosters plugin;
     private final Map<BoosterType, ActiveBooster> activeBoosters;
+    private final UUID serverUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     public BoosterManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -47,7 +48,36 @@ public class BoosterManager {
             plugin.getFlyBoosterListener().enableFlyForAll();
         }
 
-        announceBoosterActivation(type, activator.getName(), durationMinutes);
+        announceBoosterActivation(type, activator.getName(), durationMinutes, false);
+        playGlobalSound(Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.5f);
+
+        return true;
+    }
+
+    public boolean activateScheduledBooster(BoosterType type, String activatorName, int durationMinutes) {
+        if (isBoosterActive(type)) {
+            return false;
+        }
+
+        int maxActive = plugin.getConfigManager().getMaxActiveBoosters();
+        if (maxActive != -1 && activeBoosters.size() >= maxActive) {
+            return false;
+        }
+
+        ActiveBooster booster = new ActiveBooster(type, serverUUID, activatorName, durationMinutes);
+        activeBoosters.put(type, booster);
+
+        plugin.getBossBarManager().createBossBar(booster);
+        plugin.getDataManager().saveActiveBooster(booster);
+        plugin.getDataManager().incrementBoosterUsage(type);
+
+        if (type.isEffectBooster()) {
+            plugin.getEffectBoosterListener().applyEffectToAll(type);
+        } else if (type == BoosterType.FLY) {
+            plugin.getFlyBoosterListener().enableFlyForAll();
+        }
+
+        announceBoosterActivation(type, activatorName, durationMinutes, true);
         playGlobalSound(Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.5f);
 
         return true;
@@ -126,14 +156,15 @@ public class BoosterManager {
         return 1.0;
     }
 
-    private void announceBoosterActivation(BoosterType type, String activatorName, int durationMinutes) {
+    private void announceBoosterActivation(BoosterType type, String activatorName, int durationMinutes, boolean scheduled) {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%prefix%", plugin.getMessagesManager().getPrefix());
         placeholders.put("%player%", activatorName);
         placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
         placeholders.put("%duration%", String.valueOf(durationMinutes));
 
-        String message = plugin.getMessagesManager().getMessage("booster.activated", placeholders);
+        String messageKey = scheduled ? "booster.activated-scheduled" : "booster.activated";
+        String message = plugin.getMessagesManager().getMessage(messageKey, placeholders);
         Bukkit.broadcastMessage(message);
     }
 

@@ -1,6 +1,3 @@
-# GlobalBoosters Messages - ONLY Gradient Colors
-# Use <gradient:#START:#END>text</gradient> for ALL colors
-
 prefix: "<gradient:#FFD700:#FFA500>☆ BOOSTER ☆</gradient> <gradient:#808080:#C0C0C0>»</gradient> "
 
 general:
@@ -72,6 +69,7 @@ booster:
   already-active: "<gradient:#FF6347:#FF0000>⚠ This booster type is already active!</gradient>"
   max-active-reached: "<gradient:#FF6347:#FF0000>⚠ Maximum active boosters reached! (%max% boosters)</gradient>"
   activated: "%prefix%<gradient:#00CED1:#1E90FF>%player%</gradient> <gradient:#808080:#A9A9A9>activated</gradient> %booster% <gradient:#808080:#A9A9A9>for</gradient> <gradient:#32CD32:#00FF00>%duration% minutes</gradient><gradient:#808080:#A9A9A9>!</gradient>"
+  activated-scheduled: "%prefix%<gradient:#9370DB:#8B008B>⏰ Scheduled activation:</gradient> %booster% <gradient:#808080:#A9A9A9>for</gradient> <gradient:#32CD32:#00FF00>%duration% minutes</gradient><gradient:#808080:#A9A9A9>!</gradient>"
   expired: "%prefix%%booster% <gradient:#FF6347:#FF0000>has expired!</gradient>"
   item-name: "<gradient:#FFD700:#FF8C00>★ %booster% ★</gradient>"
   item-lore:

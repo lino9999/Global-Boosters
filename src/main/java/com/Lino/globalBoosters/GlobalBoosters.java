@@ -14,9 +14,11 @@ import com.Lino.globalBoosters.managers.BoosterManager;
 import com.Lino.globalBoosters.managers.BossBarManager;
 import com.Lino.globalBoosters.managers.SupplyManager;
 import com.Lino.globalBoosters.tasks.BoosterTickTask;
+import com.Lino.globalBoosters.tasks.ScheduledBoosterTask;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public class GlobalBoosters extends JavaPlugin {
 
@@ -31,6 +33,7 @@ public class GlobalBoosters extends JavaPlugin {
     private EffectBoosterListener effectBoosterListener;
     private FlyBoosterListener flyBoosterListener;
     private SupplyManager supplyManager;
+    private BukkitTask scheduledBoosterTask;
 
     @Override
     public void onEnable() {
@@ -52,6 +55,9 @@ public class GlobalBoosters extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (scheduledBoosterTask != null) {
+            scheduledBoosterTask.cancel();
+        }
         if (boosterManager != null) {
             boosterManager.saveAllBoosters();
         }
@@ -101,6 +107,21 @@ public class GlobalBoosters extends JavaPlugin {
 
     private void startTasks() {
         new BoosterTickTask(this).runTaskTimer(this, 20L, 20L);
+
+        if (configManager.isScheduledBoostersEnabled()) {
+            scheduledBoosterTask = new ScheduledBoosterTask(this).runTaskTimer(this, 100L, 1200L);
+        }
+    }
+
+    public void reloadScheduledTask() {
+        if (scheduledBoosterTask != null) {
+            scheduledBoosterTask.cancel();
+            scheduledBoosterTask = null;
+        }
+
+        if (configManager.isScheduledBoostersEnabled()) {
+            scheduledBoosterTask = new ScheduledBoosterTask(this).runTaskTimer(this, 100L, 1200L);
+        }
     }
 
     private boolean setupEconomy() {

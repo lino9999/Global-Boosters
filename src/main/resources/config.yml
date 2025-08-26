@@ -1,28 +1,58 @@
-# GlobalBoosters Configuration
-# Configure prices, durations and multipliers for each booster type
-
-# Maximum number of boosters that can be active at the same time
-# Set to -1 for unlimited
 max_active_boosters: 3
 
-# Keep booster effects after player death
-# If true, effects will be reapplied when player respawns
 keep_effects_on_death: true
 
-# Limited Supply Mode - If enabled, each booster can only be purchased limited times until reset
 limited_supply_mode: false
 
-# Max supply per booster before reset (default: 10)
 max_supply_per_booster: 10
 
-# Hour of day when supply resets (0-23, where 0 = midnight, 12 = noon, 23 = 11 PM)
 supply_reset_hour: 0
+
+scheduled_boosters:
+  enabled: false
+  schedules:
+    strength_morning:
+      enabled: false
+      type: STRENGTH
+      hour: 10
+      minute: 0
+      duration: 30
+      activator_name: "Server"
+      days:
+        - MONDAY
+        - TUESDAY
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY
+    exp_evening:
+      enabled: false
+      type: EXP_MULTIPLIER
+      hour: 20
+      minute: 0
+      duration: 60
+      activator_name: "Server"
+      days:
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY
+    speed_noon:
+      enabled: false
+      type: SPEED
+      hour: 12
+      minute: 0
+      duration: 30
+      activator_name: "Server"
+      days:
+        - SATURDAY
+        - SUNDAY
 
 boosters:
   plant_growth:
     enabled: true
     price: 500.0
-    duration: 30  # minutes
+    duration: 30
   spawner_rate:
     enabled: true
     price: 1500.0
@@ -62,42 +92,42 @@ boosters:
     enabled: true
     price: 1000.0
     duration: 30
-    multiplier: 2.0  # Haste level (1.0 = Haste I, 2.0 = Haste II)
+    multiplier: 2.0
   resistance:
     enabled: true
     price: 1500.0
     duration: 30
-    multiplier: 2.0  # Resistance level
+    multiplier: 2.0
   jump_boost:
     enabled: true
     price: 800.0
     duration: 30
-    multiplier: 2.0  # Jump Boost level
+    multiplier: 2.0
   regeneration:
     enabled: true
     price: 2000.0
     duration: 30
-    multiplier: 1.0  # Regeneration level
+    multiplier: 1.0
   night_vision:
     enabled: true
     price: 600.0
     duration: 30
-    multiplier: 1.0  # Night Vision doesn't have levels
+    multiplier: 1.0
   fire_resistance:
     enabled: true
     price: 1200.0
     duration: 30
-    multiplier: 1.0  # Fire Resistance doesn't have levels
+    multiplier: 1.0
   speed:
     enabled: true
     price: 1000.0
     duration: 30
-    multiplier: 2.0  # Speed level
+    multiplier: 2.0
   strength:
     enabled: true
     price: 2500.0
     duration: 30
-    multiplier: 2.0  # Strength level
+    multiplier: 2.0
   no_fall_damage:
     enabled: true
     price: 800.0
@@ -106,12 +136,12 @@ boosters:
     enabled: true
     price: 600.0
     duration: 30
-    multiplier: 0.5  # 50% chance to not lose hunger
+    multiplier: 0.5
   armor_durability:
     enabled: true
     price: 1200.0
     duration: 30
-    multiplier: 0.5  # 50% chance armor doesn't take damage
+    multiplier: 0.5
   keep_inventory:
     enabled: true
     price: 3000.0

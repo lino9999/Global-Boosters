@@ -2,10 +2,11 @@ package com.Lino.globalBoosters.config;
 
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.DayOfWeek;
+import java.util.*;
 
 public class ConfigManager {
 
@@ -14,11 +15,13 @@ public class ConfigManager {
     private final Map<BoosterType, Integer> boosterDurations;
     private final Map<BoosterType, Double> boosterMultipliers;
     private final Map<BoosterType, Boolean> boosterEnabled;
+    private final List<ScheduledBooster> scheduledBoosters;
     private int maxActiveBoosters;
     private boolean limitedSupplyEnabled;
     private int resetHour;
     private int maxSupplyPerBooster;
     private boolean keepEffectsOnDeath;
+    private boolean scheduledBoostersEnabled;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -26,6 +29,7 @@ public class ConfigManager {
         this.boosterDurations = new HashMap<>();
         this.boosterMultipliers = new HashMap<>();
         this.boosterEnabled = new HashMap<>();
+        this.scheduledBoosters = new ArrayList<>();
 
         loadConfig();
     }
@@ -39,6 +43,9 @@ public class ConfigManager {
         resetHour = config.getInt("supply_reset_hour", 0);
         maxSupplyPerBooster = config.getInt("max_supply_per_booster", 10);
         keepEffectsOnDeath = config.getBoolean("keep_effects_on_death", true);
+
+        scheduledBoostersEnabled = config.getBoolean("scheduled_boosters.enabled", false);
+        loadScheduledBoosters(config);
 
         for (BoosterType type : BoosterType.values()) {
             String path = "boosters." + type.name().toLowerCase();
@@ -66,6 +73,49 @@ public class ConfigManager {
         }
 
         plugin.saveConfig();
+    }
+
+    private void loadScheduledBoosters(FileConfiguration config) {
+        scheduledBoosters.clear();
+
+        ConfigurationSection schedules = config.getConfigurationSection("scheduled_boosters.schedules");
+        if (schedules == null) {
+            return;
+        }
+
+        for (String key : schedules.getKeys(false)) {
+            ConfigurationSection schedule = schedules.getConfigurationSection(key);
+            if (schedule == null || !schedule.getBoolean("enabled", false)) {
+                continue;
+            }
+
+            try {
+                BoosterType type = BoosterType.valueOf(schedule.getString("type", "").toUpperCase());
+                int hour = schedule.getInt("hour", 0);
+                int minute = schedule.getInt("minute", 0);
+                int duration = schedule.getInt("duration", 30);
+                String activatorName = schedule.getString("activator_name", "Server");
+
+                Set<DayOfWeek> days = new HashSet<>();
+                List<String> daysList = schedule.getStringList("days");
+                for (String day : daysList) {
+                    try {
+                        days.add(DayOfWeek.valueOf(day.toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        plugin.getLogger().warning("Invalid day in schedule " + key + ": " + day);
+                    }
+                }
+
+                if (!days.isEmpty()) {
+                    ScheduledBooster scheduledBooster = new ScheduledBooster(
+                            type, hour, minute, duration, activatorName, days
+                    );
+                    scheduledBoosters.add(scheduledBooster);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to load scheduled booster: " + key);
+            }
+        }
     }
 
     public double getBoosterPrice(BoosterType type) {
@@ -104,6 +154,14 @@ public class ConfigManager {
         return keepEffectsOnDeath;
     }
 
+    public boolean isScheduledBoostersEnabled() {
+        return scheduledBoostersEnabled;
+    }
+
+    public List<ScheduledBooster> getScheduledBoosters() {
+        return new ArrayList<>(scheduledBoosters);
+    }
+
     private boolean isNoMultiplierBooster(BoosterType type) {
         switch (type) {
             case NO_FALL_DAMAGE:
@@ -121,6 +179,7 @@ public class ConfigManager {
         boosterDurations.clear();
         boosterMultipliers.clear();
         boosterEnabled.clear();
+        scheduledBoosters.clear();
         loadConfig();
     }
 
@@ -163,6 +222,49 @@ public class ConfigManager {
                 return 2500.0;
             default:
                 return 1000.0;
+        }
+    }
+
+    public static class ScheduledBooster {
+        private final BoosterType type;
+        private final int hour;
+        private final int minute;
+        private final int duration;
+        private final String activatorName;
+        private final Set<DayOfWeek> days;
+
+        public ScheduledBooster(BoosterType type, int hour, int minute, int duration,
+                                String activatorName, Set<DayOfWeek> days) {
+            this.type = type;
+            this.hour = hour;
+            this.minute = minute;
+            this.duration = duration;
+            this.activatorName = activatorName;
+            this.days = days;
+        }
+
+        public BoosterType getType() {
+            return type;
+        }
+
+        public int getHour() {
+            return hour;
+        }
+
+        public int getMinute() {
+            return minute;
+        }
+
+        public int getDuration() {
+            return duration;
+        }
+
+        public String getActivatorName() {
+            return activatorName;
+        }
+
+        public Set<DayOfWeek> getDays() {
+            return days;
         }
     }
 }
