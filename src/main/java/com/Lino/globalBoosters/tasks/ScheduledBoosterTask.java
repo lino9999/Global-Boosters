@@ -7,6 +7,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class ScheduledBoosterTask extends BukkitRunnable {
@@ -25,10 +27,20 @@ public class ScheduledBoosterTask extends BukkitRunnable {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        DayOfWeek currentDay = now.getDayOfWeek();
-        int currentHour = now.getHour();
-        int currentMinute = now.getMinute();
+        String timezoneStr = plugin.getConfigManager().getScheduledBoostersTimezone();
+        ZoneId timezone;
+
+        try {
+            timezone = ZoneId.of(timezoneStr);
+        } catch (Exception e) {
+            plugin.getLogger().warning("Invalid timezone '" + timezoneStr + "' in config. Using server default.");
+            timezone = ZoneId.systemDefault();
+        }
+
+        ZonedDateTime zonedNow = ZonedDateTime.now(timezone);
+        DayOfWeek currentDay = zonedNow.getDayOfWeek();
+        int currentHour = zonedNow.getHour();
+        int currentMinute = zonedNow.getMinute();
 
         for (ConfigManager.ScheduledBooster schedule : plugin.getConfigManager().getScheduledBoosters()) {
             if (!schedule.getDays().contains(currentDay)) {
@@ -56,6 +68,9 @@ public class ScheduledBoosterTask extends BukkitRunnable {
 
                 if (activated) {
                     lastActivated.put(scheduleKey, currentTime);
+                    plugin.getLogger().info("Scheduled booster activated: " + schedule.getType().name() +
+                            " at " + currentHour + ":" + String.format("%02d", currentMinute) +
+                            " (" + timezoneStr + " timezone)");
                 }
             }
         }

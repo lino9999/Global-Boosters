@@ -22,6 +22,7 @@ public class ConfigManager {
     private int maxSupplyPerBooster;
     private boolean keepEffectsOnDeath;
     private boolean scheduledBoostersEnabled;
+    private String scheduledBoostersTimezone;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -45,6 +46,7 @@ public class ConfigManager {
         keepEffectsOnDeath = config.getBoolean("keep_effects_on_death", true);
 
         scheduledBoostersEnabled = config.getBoolean("scheduled_boosters.enabled", false);
+        scheduledBoostersTimezone = config.getString("scheduled_boosters.timezone", "UTC");
         loadScheduledBoosters(config);
 
         for (BoosterType type : BoosterType.values()) {
@@ -160,6 +162,10 @@ public class ConfigManager {
 
     public List<ScheduledBooster> getScheduledBoosters() {
         return new ArrayList<>(scheduledBoosters);
+    }
+
+    public String getScheduledBoostersTimezone() {
+        return scheduledBoostersTimezone;
     }
 
     private boolean isNoMultiplierBooster(BoosterType type) {

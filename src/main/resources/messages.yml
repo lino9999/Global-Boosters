@@ -97,6 +97,7 @@ commands:
     boostshop: "<gradient:#00CED1:#00BFFF>/boostshop</gradient> <gradient:#808080:#A9A9A9>- Open the booster shop</gradient>"
     globalboosters-help: "<gradient:#00CED1:#00BFFF>/globalboosters help</gradient> <gradient:#808080:#A9A9A9>- Show this help message</gradient>"
     globalboosters-list: "<gradient:#00CED1:#00BFFF>/globalboosters list</gradient> <gradient:#808080:#A9A9A9>- List all active boosters</gradient>"
+    globalboosters-schedule: "<gradient:#00CED1:#00BFFF>/globalboosters schedule</gradient> <gradient:#808080:#A9A9A9>- View scheduled boosters info</gradient>"
     booster-shop: "<gradient:#00CED1:#00BFFF>/booster shop</gradient> <gradient:#808080:#A9A9A9>- Open the booster shop</gradient>"
     booster-give: "<gradient:#00CED1:#00BFFF>/booster give <player> <type> [duration]</gradient> <gradient:#808080:#A9A9A9>- Give a booster</gradient>"
     booster-reload: "<gradient:#00CED1:#00BFFF>/booster reload</gradient> <gradient:#808080:#A9A9A9>- Reload configuration</gradient>"
@@ -123,6 +124,14 @@ commands:
     no-active: "<gradient:#FF0000:#FF6B6B>No boosters are currently active!</gradient>"
     activated-by: "<gradient:#808080:#A9A9A9>Activated by:</gradient> <gradient:#FFFFFF:#F0F0F0>%player%</gradient>"
     time-remaining: "<gradient:#808080:#A9A9A9>Time remaining:</gradient> <gradient:#FFFFFF:#F0F0F0>%time%</gradient>"
+  schedule:
+    header: "<gradient:#FFD700:#FF8C00>==== Scheduled Boosters ====</gradient>"
+    footer: "<gradient:#FFD700:#FF8C00>===========================</gradient>"
+    disabled: "<gradient:#FF0000:#FF6B6B>Scheduled boosters are currently disabled!</gradient>"
+    current-info: "<gradient:#808080:#A9A9A9>Timezone:</gradient> <gradient:#00CED1:#00BFFF>%timezone%</gradient> <gradient:#808080:#A9A9A9>| Current time:</gradient> <gradient:#00FF00:#32CD32>%time%</gradient> <gradient:#808080:#A9A9A9>| Day:</gradient> <gradient:#FFA500:#FFD700>%day%</gradient>"
+    no-schedules: "<gradient:#FF0000:#FF6B6B>No scheduled boosters configured!</gradient>"
+    list-header: "<gradient:#9370DB:#8B008B>Configured schedules:</gradient>"
+    entry: "<gradient:#808080:#A9A9A9>•</gradient> <gradient:#FFFFFF:#F0F0F0>%booster%</gradient> <gradient:#808080:#A9A9A9>at</gradient> <gradient:#00CED1:#00BFFF>%hour%:%minute%</gradient> <gradient:#808080:#A9A9A9>for</gradient> <gradient:#00FF00:#32CD32>%duration%min</gradient> <gradient:#808080:#A9A9A9>on</gradient> <gradient:#FFA500:#FFD700>%days%</gradient>"
 
 effects:
   plant_growth: "<gradient:#808080:#A9A9A9>•</gradient> <gradient:#FFFFFF:#F0F0F0>Instant crop growth</gradient> <gradient:#00FF00:#32CD32>✓</gradient>"
