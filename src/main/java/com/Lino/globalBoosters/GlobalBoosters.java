@@ -86,8 +86,13 @@ public class GlobalBoosters extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("boostshop").setExecutor(new BoostShopCommand(this));
-        getCommand("globalboosters").setExecutor(new GlobalBoostersCommand(this));
+        BoostShopCommand boostShopCommand = new BoostShopCommand(this);
+        getCommand("boostshop").setExecutor(boostShopCommand);
+        getCommand("boostshop").setTabCompleter(boostShopCommand);
+
+        GlobalBoostersCommand globalBoostersCommand = new GlobalBoostersCommand(this);
+        getCommand("globalboosters").setExecutor(globalBoostersCommand);
+        getCommand("globalboosters").setTabCompleter(globalBoostersCommand);
 
         BoosterCommand boosterCommand = new BoosterCommand(this);
         getCommand("booster").setExecutor(boosterCommand);

@@ -23,6 +23,7 @@ public class ConfigManager {
     private boolean keepEffectsOnDeath;
     private boolean scheduledBoostersEnabled;
     private String scheduledBoostersTimezone;
+    private boolean shopGuiEnabled;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -44,6 +45,7 @@ public class ConfigManager {
         resetHour = config.getInt("supply_reset_hour", 0);
         maxSupplyPerBooster = config.getInt("max_supply_per_booster", 10);
         keepEffectsOnDeath = config.getBoolean("keep_effects_on_death", true);
+        shopGuiEnabled = config.getBoolean("shop_gui_enabled", true);
 
         scheduledBoostersEnabled = config.getBoolean("scheduled_boosters.enabled", false);
         scheduledBoostersTimezone = config.getString("scheduled_boosters.timezone", "UTC");
@@ -166,6 +168,10 @@ public class ConfigManager {
 
     public String getScheduledBoostersTimezone() {
         return scheduledBoostersTimezone;
+    }
+
+    public boolean isShopGuiEnabled() {
+        return shopGuiEnabled;
     }
 
     private boolean isNoMultiplierBooster(BoosterType type) {

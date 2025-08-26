@@ -5,9 +5,13 @@ import com.Lino.globalBoosters.gui.BoosterShopGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class BoostShopCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class BoostShopCommand implements CommandExecutor, TabCompleter {
 
     private final GlobalBoosters plugin;
 
@@ -29,7 +33,17 @@ public class BoostShopCommand implements CommandExecutor {
             return true;
         }
 
+        if (!plugin.getConfigManager().isShopGuiEnabled()) {
+            player.sendMessage(plugin.getMessagesManager().getMessage("shop.disabled"));
+            return true;
+        }
+
         new BoosterShopGUI(plugin, player).open();
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return new ArrayList<>();
     }
 }

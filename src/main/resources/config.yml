@@ -8,6 +8,9 @@ max_supply_per_booster: 10
 
 supply_reset_hour: 0
 
+# Shop GUI Settings
+shop_gui_enabled: true
+
 # Scheduled Boosters Configuration
 # Automatically activates boosters at specific times
 scheduled_boosters:
@@ -17,16 +20,16 @@ scheduled_boosters:
   # Examples: UTC, GMT, America/New_York, Europe/London, Europe/Rome,
   # Asia/Tokyo, America/Los_Angeles, Australia/Sydney
   # Full list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-  timezone: Europe/Rome
+  timezone: "UTC"
 
   schedules:
     strength_morning:
-      enabled: true
+      enabled: false
       type: STRENGTH
-      hour: 17 # 24-hour format (0-23)
-      minute: 5 # 0-59
-      duration: 30 # Duration in minutes
-      activator_name: Server
+      hour: 10        # 24-hour format (0-23)
+      minute: 0       # 0-59
+      duration: 30    # Duration in minutes
+      activator_name: "Server"
       days:
         - MONDAY
         - TUESDAY
@@ -41,7 +44,7 @@ scheduled_boosters:
       hour: 20
       minute: 0
       duration: 60
-      activator_name: Server
+      activator_name: "Server"
       days:
         - FRIDAY
         - SATURDAY
@@ -52,7 +55,7 @@ scheduled_boosters:
       hour: 12
       minute: 0
       duration: 30
-      activator_name: Server
+      activator_name: "Server"
       days:
         - SATURDAY
         - SUNDAY

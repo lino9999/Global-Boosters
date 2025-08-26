@@ -33,6 +33,7 @@ booster-names:
 shop:
   title: "<gradient:#FFD700:#FF8C00>★ BOOSTER SHOP ★</gradient>"
   confirm-title: "<gradient:#FFA500:#FF6347>⚡ Confirm Purchase ⚡</gradient>"
+  disabled: "<gradient:#FF0000:#FF6B6B>✖ The booster shop is currently disabled!</gradient>"
   item-lore:
     multiplier: "<gradient:#808080:#A9A9A9>➤</gradient> <gradient:#00CED1:#00BFFF>Multiplier:</gradient> <gradient:#FFFFFF:#F0F0F0>%multiplier%x</gradient>"
     duration: "<gradient:#808080:#A9A9A9>➤</gradient> <gradient:#00CED1:#00BFFF>Duration:</gradient> <gradient:#FFFFFF:#F0F0F0>%duration% minutes</gradient>"
@@ -97,11 +98,11 @@ commands:
     boostshop: "<gradient:#00CED1:#00BFFF>/boostshop</gradient> <gradient:#808080:#A9A9A9>- Open the booster shop</gradient>"
     globalboosters-help: "<gradient:#00CED1:#00BFFF>/globalboosters help</gradient> <gradient:#808080:#A9A9A9>- Show this help message</gradient>"
     globalboosters-list: "<gradient:#00CED1:#00BFFF>/globalboosters list</gradient> <gradient:#808080:#A9A9A9>- List all active boosters</gradient>"
-    globalboosters-schedule: "<gradient:#00CED1:#00BFFF>/globalboosters schedule</gradient> <gradient:#808080:#A9A9A9>- View scheduled boosters info</gradient>"
     booster-shop: "<gradient:#00CED1:#00BFFF>/booster shop</gradient> <gradient:#808080:#A9A9A9>- Open the booster shop</gradient>"
     booster-give: "<gradient:#00CED1:#00BFFF>/booster give <player> <type> [duration]</gradient> <gradient:#808080:#A9A9A9>- Give a booster</gradient>"
     booster-reload: "<gradient:#00CED1:#00BFFF>/booster reload</gradient> <gradient:#808080:#A9A9A9>- Reload configuration</gradient>"
     booster-stats: "<gradient:#00CED1:#00BFFF>/booster stats</gradient> <gradient:#808080:#A9A9A9>- View booster statistics</gradient>"
+    booster-schedule: "<gradient:#00CED1:#00BFFF>/booster schedule</gradient> <gradient:#808080:#A9A9A9>- View scheduled boosters info</gradient>"
     available-boosters: "<gradient:#FFD700:#FF8C00>Available Boosters:</gradient>"
   booster:
     help-header: "<gradient:#FFD700:#FF8C00>GlobalBoosters Commands:</gradient>"

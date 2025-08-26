@@ -2,6 +2,7 @@ package com.Lino.globalBoosters.commands;
 
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
+import com.Lino.globalBoosters.config.ConfigManager;
 import com.Lino.globalBoosters.items.BoosterItem;
 import com.Lino.globalBoosters.gui.BoosterShopGUI;
 import com.Lino.globalBoosters.utils.GradientColor;
@@ -15,6 +16,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +49,8 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                 return handleStats(sender);
             case "shop":
                 return handleShop(sender);
+            case "schedule":
+                return handleSchedule(sender);
             default:
                 sendHelp(sender);
                 return true;
@@ -139,6 +146,11 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (!plugin.getConfigManager().isShopGuiEnabled()) {
+            player.sendMessage(plugin.getMessagesManager().getMessage("shop.disabled"));
+            return true;
+        }
+
         new BoosterShopGUI(plugin, player).open();
         return true;
     }
@@ -196,6 +208,73 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleSchedule(CommandSender sender) {
+        if (!sender.hasPermission("globalboosters.admin")) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
+            return true;
+        }
+
+        sender.sendMessage("");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.header"));
+        sender.sendMessage("");
+
+        if (!plugin.getConfigManager().isScheduledBoostersEnabled()) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.disabled"));
+            sender.sendMessage("");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.footer"));
+            return true;
+        }
+
+        String timezoneStr = plugin.getConfigManager().getScheduledBoostersTimezone();
+        ZoneId timezone;
+
+        try {
+            timezone = ZoneId.of(timezoneStr);
+        } catch (Exception e) {
+            timezone = ZoneId.systemDefault();
+            timezoneStr = timezone.getId();
+        }
+
+        ZonedDateTime zonedNow = ZonedDateTime.now(timezone);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String currentTime = zonedNow.format(formatter);
+        String currentDay = zonedNow.getDayOfWeek().toString();
+
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%timezone%", timezoneStr);
+        placeholders.put("%time%", currentTime);
+        placeholders.put("%day%", currentDay);
+
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.current-info", placeholders));
+        sender.sendMessage("");
+
+        if (plugin.getConfigManager().getScheduledBoosters().isEmpty()) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.no-schedules"));
+        } else {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.list-header"));
+            for (ConfigManager.ScheduledBooster schedule : plugin.getConfigManager().getScheduledBoosters()) {
+                placeholders.clear();
+                placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(schedule.getType()));
+                placeholders.put("%hour%", String.format("%02d", schedule.getHour()));
+                placeholders.put("%minute%", String.format("%02d", schedule.getMinute()));
+                placeholders.put("%duration%", String.valueOf(schedule.getDuration()));
+
+                StringBuilder daysStr = new StringBuilder();
+                for (DayOfWeek day : schedule.getDays()) {
+                    if (daysStr.length() > 0) daysStr.append(", ");
+                    daysStr.append(day.toString().substring(0, 3));
+                }
+                placeholders.put("%days%", daysStr.toString());
+
+                sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.entry", placeholders));
+            }
+        }
+
+        sender.sendMessage("");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.schedule.footer"));
+        return true;
+    }
+
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.help-header"));
         sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-shop"));
@@ -207,6 +286,9 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         }
         if (sender.hasPermission("globalboosters.admin.stats")) {
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-stats"));
+        }
+        if (sender.hasPermission("globalboosters.admin")) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-schedule"));
         }
     }
 
@@ -223,6 +305,9 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
             }
             if (sender.hasPermission("globalboosters.admin.stats")) {
                 subCommands.add("stats");
+            }
+            if (sender.hasPermission("globalboosters.admin")) {
+                subCommands.add("schedule");
             }
             return filterStartingWith(subCommands, args[0]);
         }
