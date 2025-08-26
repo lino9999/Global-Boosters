@@ -20,7 +20,7 @@ scheduled_boosters:
   # Examples: UTC, GMT, America/New_York, Europe/London, Europe/Rome,
   # Asia/Tokyo, America/Los_Angeles, Australia/Sydney
   # Full list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-  timezone: "UTC"
+  timezone: "Europe/Rome"
 
   schedules:
     strength_morning:
