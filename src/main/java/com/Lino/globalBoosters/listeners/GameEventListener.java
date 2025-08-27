@@ -2,13 +2,11 @@ package com.Lino.globalBoosters.listeners;
 
 import com.Lino.globalBoosters.GlobalBoosters;
 import com.Lino.globalBoosters.boosters.BoosterType;
-import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -18,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockGrowEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -28,7 +27,6 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -42,11 +40,16 @@ public class GameEventListener implements Listener {
 
     private final GlobalBoosters plugin;
     private final Random random = new Random();
-    private final Map<Player, ItemStack[]> savedInventories = new HashMap<>();
-    private final Map<Player, ItemStack[]> savedArmor = new HashMap<>();
+    private final Map<Location, Long> recentlyPlacedBlocks = new HashMap<>();
 
     public GameEventListener(GlobalBoosters plugin) {
         this.plugin = plugin;
+        // Clean up old entries every minute
+        plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            long currentTime = System.currentTimeMillis();
+            recentlyPlacedBlocks.entrySet().removeIf(entry ->
+                    currentTime - entry.getValue() > 3000); // Remove after 3 seconds
+        }, 1200L, 1200L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -148,22 +151,135 @@ public class GameEventListener implements Listener {
         Player player = event.getPlayer();
         Block block = event.getBlock();
 
+        // Mining Speed - separate and independent
         if (plugin.getBoosterManager().isBoosterActive(BoosterType.MINING_SPEED)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, 40, 1, false, false));
         }
+    }
 
-        if (plugin.getBoosterManager().isBoosterActive(BoosterType.FARMING_FORTUNE)) {
-            if (isCrop(block.getType())) {
-                event.setDropItems(false);
-                double multiplier = plugin.getConfigManager().getBoosterMultiplier(BoosterType.FARMING_FORTUNE);
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Block block = event.getBlock();
+        Material type = block.getType();
 
-                for (ItemStack drop : block.getDrops(player.getInventory().getItemInMainHand())) {
-                    if (drop != null && drop.getType() != Material.AIR) {
-                        ItemStack multipliedDrop = drop.clone();
-                        multipliedDrop.setAmount((int) (drop.getAmount() * multiplier));
-                        block.getWorld().dropItemNaturally(block.getLocation(), multipliedDrop);
-                    }
+        // Track placement of farmable blocks
+        if (type == Material.SUGAR_CANE || type == Material.BAMBOO ||
+                type == Material.CACTUS || type == Material.KELP ||
+                type == Material.KELP_PLANT) {
+            recentlyPlacedBlocks.put(block.getLocation(), System.currentTimeMillis());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onFarmingFortuneCheck(BlockBreakEvent event) {
+        // Completely separate handler for farming fortune
+        if (!plugin.getBoosterManager().isBoosterActive(BoosterType.FARMING_FORTUNE)) {
+            return; // Do absolutely nothing if not active
+        }
+
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        Material blockType = block.getType();
+
+        // Check if this block was recently placed
+        if (recentlyPlacedBlocks.containsKey(block.getLocation())) {
+            return; // Block was just placed, no bonus
+        }
+
+        // Check for mature crops only
+        if (blockType == Material.WHEAT ||
+                blockType == Material.CARROTS ||
+                blockType == Material.POTATOES ||
+                blockType == Material.BEETROOTS) {
+
+            BlockData data = block.getBlockData();
+            if (data instanceof Ageable) {
+                Ageable ageable = (Ageable) data;
+                if (ageable.getAge() == ageable.getMaximumAge()) {
+                    // Spawn bonus drops
+                    spawnBonusCrop(player, blockType);
                 }
+            }
+        } else if (blockType == Material.SUGAR_CANE ||
+                blockType == Material.BAMBOO ||
+                blockType == Material.CACTUS) {
+            // Check all blocks in the column for recently placed
+            boolean isNatural = true;
+
+            // Check current block and blocks below
+            Block checkBlock = block;
+            while (checkBlock.getType() == blockType) {
+                if (recentlyPlacedBlocks.containsKey(checkBlock.getLocation())) {
+                    isNatural = false;
+                    break;
+                }
+                checkBlock = checkBlock.getRelative(0, -1, 0);
+            }
+
+            // Check blocks above
+            checkBlock = block.getRelative(0, 1, 0);
+            while (checkBlock.getType() == blockType) {
+                if (recentlyPlacedBlocks.containsKey(checkBlock.getLocation())) {
+                    isNatural = false;
+                    break;
+                }
+                checkBlock = checkBlock.getRelative(0, 1, 0);
+            }
+
+            if (isNatural) {
+                spawnBonusCrop(player, blockType);
+            }
+        } else if (blockType == Material.MELON || blockType == Material.PUMPKIN) {
+            // These don't need checks
+            spawnBonusCrop(player, blockType);
+        }
+    }
+
+    private void spawnBonusCrop(Player player, Material cropType) {
+        double multiplier = plugin.getConfigManager().getBoosterMultiplier(BoosterType.FARMING_FORTUNE);
+        if (multiplier <= 1.0) return;
+
+        Material dropMaterial = null;
+        int baseAmount = 1;
+
+        switch (cropType) {
+            case WHEAT:
+                dropMaterial = Material.WHEAT;
+                break;
+            case CARROTS:
+                dropMaterial = Material.CARROT;
+                baseAmount = 2;
+                break;
+            case POTATOES:
+                dropMaterial = Material.POTATO;
+                baseAmount = 2;
+                break;
+            case BEETROOTS:
+                dropMaterial = Material.BEETROOT;
+                break;
+            case SUGAR_CANE:
+                dropMaterial = Material.SUGAR_CANE;
+                break;
+            case BAMBOO:
+                dropMaterial = Material.BAMBOO;
+                break;
+            case CACTUS:
+                dropMaterial = Material.CACTUS;
+                break;
+            case MELON:
+                dropMaterial = Material.MELON_SLICE;
+                baseAmount = 5;
+                break;
+            case PUMPKIN:
+                dropMaterial = Material.PUMPKIN;
+                break;
+        }
+
+        if (dropMaterial != null) {
+            int extraAmount = (int) (baseAmount * (multiplier - 1));
+            if (extraAmount > 0) {
+                ItemStack bonus = new ItemStack(dropMaterial, extraAmount);
+                player.getWorld().dropItemNaturally(player.getLocation(), bonus);
             }
         }
     }
@@ -233,26 +349,6 @@ public class GameEventListener implements Listener {
             event.setKeepLevel(true);
             event.getDrops().clear();
             event.setDroppedExp(0);
-        }
-    }
-
-    private boolean isCrop(Material material) {
-        switch (material) {
-            case WHEAT:
-            case CARROTS:
-            case POTATOES:
-            case BEETROOTS:
-            case NETHER_WART:
-            case SWEET_BERRY_BUSH:
-            case COCOA:
-            case SUGAR_CANE:
-            case BAMBOO:
-            case CACTUS:
-            case MELON:
-            case PUMPKIN:
-                return true;
-            default:
-                return false;
         }
     }
 
