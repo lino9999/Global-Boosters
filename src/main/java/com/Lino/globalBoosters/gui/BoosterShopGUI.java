@@ -82,7 +82,7 @@ public class BoosterShopGUI {
         List<String> lore = new ArrayList<>();
         lore.add("");
 
-        if (!isNoMultiplierBooster(type) && !type.isEffectBooster()) {
+        if (!isNoMultiplierBooster(type) && (!type.isEffectBooster() || type == BoosterType.PLANT_GROWTH)) {
             double multiplier = plugin.getConfigManager().getBoosterMultiplier(type);
             placeholders.put("%multiplier%", String.valueOf(multiplier));
             lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.multiplier", placeholders));
@@ -132,7 +132,6 @@ public class BoosterShopGUI {
             case NO_FALL_DAMAGE:
             case KEEP_INVENTORY:
             case FLY:
-            case PLANT_GROWTH:
                 return true;
             default:
                 return false;

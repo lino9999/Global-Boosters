@@ -15,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -50,23 +49,6 @@ public class GameEventListener implements Listener {
             recentlyPlacedBlocks.entrySet().removeIf(entry ->
                     currentTime - entry.getValue() > 3000); // Remove after 3 seconds
         }, 1200L, 1200L);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockGrow(BlockGrowEvent event) {
-        if (plugin.getBoosterManager().isBoosterActive(BoosterType.PLANT_GROWTH) && !event.isCancelled()) {
-            Block block = event.getBlock();
-
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                if (block.getBlockData() instanceof Ageable) {
-                    Ageable ageable = (Ageable) block.getBlockData();
-                    if (ageable.getAge() < ageable.getMaximumAge()) {
-                        ageable.setAge(ageable.getMaximumAge());
-                        block.setBlockData(ageable);
-                    }
-                }
-            }, 1L);
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

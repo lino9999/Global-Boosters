@@ -3,7 +3,7 @@ package com.Lino.globalBoosters.boosters;
 import org.bukkit.Material;
 
 public enum BoosterType {
-    PLANT_GROWTH(Material.WHEAT, 2.0, false),
+    PLANT_GROWTH(Material.WHEAT, 20.0, false),
     SPAWNER_RATE(Material.SPAWNER, 2.0, false),
     EXP_MULTIPLIER(Material.EXPERIENCE_BOTTLE, 2.0, false),
     MOB_DROP(Material.ROTTEN_FLESH, 2.0, false),

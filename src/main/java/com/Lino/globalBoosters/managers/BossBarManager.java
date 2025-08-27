@@ -84,6 +84,9 @@ public class BossBarManager {
         if (!booster.getType().isEffectBooster() && !isNoMultiplierBooster(booster.getType())) {
             double multiplier = plugin.getConfigManager().getBoosterMultiplier(booster.getType());
             boosterNameRaw += " <gradient:#808080:#A9A9A9>(" + multiplier + "x)</gradient>";
+        } else if (booster.getType() == BoosterType.PLANT_GROWTH) {
+            double multiplier = plugin.getConfigManager().getBoosterMultiplier(booster.getType());
+            boosterNameRaw += " <gradient:#808080:#A9A9A9>(" + multiplier + "x)</gradient>";
         }
 
         placeholders.put("%booster%", boosterNameRaw);
@@ -98,7 +101,6 @@ public class BossBarManager {
             case NO_FALL_DAMAGE:
             case KEEP_INVENTORY:
             case FLY:
-            case PLANT_GROWTH:
                 return true;
             default:
                 return false;

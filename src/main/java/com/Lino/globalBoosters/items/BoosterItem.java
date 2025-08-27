@@ -29,7 +29,7 @@ public class BoosterItem {
                 plugin.getMessagesManager().getMessage("booster.item-lore.line4")
         ));
 
-        if (!isNoMultiplierBooster(type) && !type.isEffectBooster()) {
+        if (!isNoMultiplierBooster(type) && (!type.isEffectBooster() || type == BoosterType.PLANT_GROWTH)) {
             placeholders.put("%multiplier%", String.valueOf(plugin.getConfigManager().getBoosterMultiplier(type)));
             lore.add(plugin.getMessagesManager().getMessage("booster.item-lore.multiplier", placeholders));
         }
@@ -63,7 +63,6 @@ public class BoosterItem {
             case NO_FALL_DAMAGE:
             case KEEP_INVENTORY:
             case FLY:
-            case PLANT_GROWTH:
                 return true;
             default:
                 return false;
