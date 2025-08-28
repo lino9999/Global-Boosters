@@ -86,6 +86,8 @@ booster:
 
 bossbar:
   format: "%booster% <gradient:#808080:#A9A9A9>|</gradient> <gradient:#00FF00:#32CD32>%time%</gradient> <gradient:#808080:#A9A9A9>| by</gradient> <gradient:#00CED1:#1E90FF>%player%</gradient>"
+  format-no-player: "%booster% <gradient:#808080:#A9A9A9>|</gradient> <gradient:#00FF00:#32CD32>%time%</gradient>"
+  format-scheduled: "%booster% <gradient:#808080:#A9A9A9>|</gradient> <gradient:#00FF00:#32CD32>%time%</gradient>"
 
 supply:
   restocked: "%prefix%<gradient:#00FF00:#32CD32>✨ Booster shop restocked! All boosters available for purchase!</gradient>"

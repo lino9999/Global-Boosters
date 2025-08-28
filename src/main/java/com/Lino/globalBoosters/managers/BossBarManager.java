@@ -13,12 +13,14 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BossBarManager {
 
     private final GlobalBoosters plugin;
     private final Map<BoosterType, BossBar> bossBars;
+    private final UUID serverUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     public BossBarManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -75,7 +77,6 @@ public class BossBarManager {
     private String formatBossBarTitle(ActiveBooster booster) {
         Map<String, String> placeholders = new HashMap<>();
 
-        // Get the booster name raw format to be processed with the rest of the message
         String boosterNameRaw = plugin.getMessagesManager().getRawMessage("booster-names." + booster.getType().name().toLowerCase());
         if (boosterNameRaw == null) {
             boosterNameRaw = "<gradient:#FFD700:#FFA500>" + booster.getType().getDisplayName() + "</gradient>";
@@ -93,7 +94,19 @@ public class BossBarManager {
         placeholders.put("%time%", booster.getTimeRemaining());
         placeholders.put("%player%", booster.getActivatorName());
 
-        return plugin.getMessagesManager().getMessage("bossbar.format", placeholders);
+        boolean isScheduled = booster.getActivatorUUID().equals(serverUUID);
+        boolean showActivator = plugin.getConfigManager().isShowActivatorName();
+
+        String messageKey;
+        if (isScheduled) {
+            messageKey = "bossbar.format-scheduled";
+        } else if (showActivator) {
+            messageKey = "bossbar.format";
+        } else {
+            messageKey = "bossbar.format-no-player";
+        }
+
+        return plugin.getMessagesManager().getMessage(messageKey, placeholders);
     }
 
     private boolean isNoMultiplierBooster(BoosterType type) {
