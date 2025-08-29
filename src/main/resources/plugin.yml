@@ -1,5 +1,5 @@
 name: GlobalBoosters
-version: '2.6-BETA'
+version: '2.7-BETA'
 main: com.Lino.globalBoosters.GlobalBoosters
 api-version: '1.21'
 depend: [Vault]
