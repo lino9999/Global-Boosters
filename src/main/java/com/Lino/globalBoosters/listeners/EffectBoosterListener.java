@@ -25,14 +25,13 @@ public class EffectBoosterListener implements Listener {
 
     private final GlobalBoosters plugin;
     private final Map<BoosterType, PotionEffectType> effectMap;
-    private final Map<BoosterType, Set<UUID>> activeEffectPlayers;
+    private final Set<UUID> playersWithBoosterEffects;
 
     public EffectBoosterListener(GlobalBoosters plugin) {
         this.plugin = plugin;
         this.effectMap = new HashMap<>();
-        this.activeEffectPlayers = new HashMap<>();
+        this.playersWithBoosterEffects = new HashSet<>();
         initializeEffectMap();
-        initializeActiveEffectPlayers();
     }
 
     private void initializeEffectMap() {
@@ -46,16 +45,38 @@ public class EffectBoosterListener implements Listener {
         effectMap.put(BoosterType.STRENGTH, PotionEffectType.STRENGTH);
     }
 
-    private void initializeActiveEffectPlayers() {
-        for (BoosterType type : effectMap.keySet()) {
-            activeEffectPlayers.put(type, new HashSet<>());
-        }
-    }
-
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        applyActiveEffects(player);
+        UUID playerId = player.getUniqueId();
+
+        removeAllBoosterEffects(player);
+
+        boolean hasActiveBooster = false;
+        for (Map.Entry<BoosterType, PotionEffectType> entry : effectMap.entrySet()) {
+            BoosterType boosterType = entry.getKey();
+            PotionEffectType effectType = entry.getValue();
+
+            if (plugin.getBoosterManager().isBoosterActive(boosterType)) {
+                ActiveBooster booster = plugin.getBoosterManager().getActiveBooster(boosterType);
+                if (booster != null && !booster.isExpired()) {
+                    int amplifier = (int) (plugin.getConfigManager().getBoosterMultiplier(boosterType) - 1);
+                    int duration = (int) (booster.getRemainingSeconds() * 20);
+
+                    if (duration > 0) {
+                        duration = Math.min(duration, 72000);
+                        player.addPotionEffect(new PotionEffect(effectType, duration, amplifier, false, false));
+                        hasActiveBooster = true;
+                    }
+                }
+            }
+        }
+
+        if (hasActiveBooster) {
+            playersWithBoosterEffects.add(playerId);
+        } else {
+            playersWithBoosterEffects.remove(playerId);
+        }
     }
 
     @EventHandler
@@ -63,13 +84,18 @@ public class EffectBoosterListener implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
+        boolean hasBoosterEffect = false;
         for (Map.Entry<BoosterType, PotionEffectType> entry : effectMap.entrySet()) {
-            BoosterType boosterType = entry.getKey();
-            PotionEffectType effectType = entry.getValue();
-
-            if (player.hasPotionEffect(effectType) && plugin.getBoosterManager().isBoosterActive(boosterType)) {
-                activeEffectPlayers.get(boosterType).add(playerId);
+            if (player.hasPotionEffect(entry.getValue()) && plugin.getBoosterManager().isBoosterActive(entry.getKey())) {
+                hasBoosterEffect = true;
+                break;
             }
+        }
+
+        if (hasBoosterEffect) {
+            playersWithBoosterEffects.add(playerId);
+        } else {
+            playersWithBoosterEffects.remove(playerId);
         }
     }
 
@@ -80,9 +106,12 @@ public class EffectBoosterListener implements Listener {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 applyActiveEffects(player);
                 if (plugin.getBoosterManager().isBoosterActive(BoosterType.FLY)) {
-                    if (!player.getAllowFlight()) {
-                        player.setAllowFlight(true);
-                        player.setFlying(true);
+                    ActiveBooster booster = plugin.getBoosterManager().getActiveBooster(BoosterType.FLY);
+                    if (booster != null && !booster.isExpired()) {
+                        if (!player.getAllowFlight()) {
+                            player.setAllowFlight(true);
+                            player.setFlying(true);
+                        }
                     }
                 }
             }, 1L);
@@ -93,17 +122,16 @@ public class EffectBoosterListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (!plugin.getConfigManager().isKeepEffectsOnDeath()) {
             Player player = event.getEntity();
-            for (Map.Entry<BoosterType, PotionEffectType> entry : effectMap.entrySet()) {
-                if (plugin.getBoosterManager().isBoosterActive(entry.getKey())) {
-                    player.removePotionEffect(entry.getValue());
-                }
-            }
+            removeAllBoosterEffects(player);
         }
     }
 
     public void applyActiveEffects(Player player) {
         UUID playerId = player.getUniqueId();
 
+        removeAllBoosterEffects(player);
+
+        boolean hasActiveBooster = false;
         for (Map.Entry<BoosterType, PotionEffectType> entry : effectMap.entrySet()) {
             BoosterType boosterType = entry.getKey();
             PotionEffectType effectType = entry.getValue();
@@ -113,20 +141,20 @@ public class EffectBoosterListener implements Listener {
                 if (booster != null && !booster.isExpired()) {
                     int amplifier = (int) (plugin.getConfigManager().getBoosterMultiplier(boosterType) - 1);
                     int duration = (int) (booster.getRemainingSeconds() * 20);
-                    duration = Math.min(duration, Integer.MAX_VALUE - 1000);
 
-                    player.addPotionEffect(new PotionEffect(effectType, duration, amplifier, false, false));
-                    activeEffectPlayers.get(boosterType).add(playerId);
-                } else {
-                    player.removePotionEffect(effectType);
-                    activeEffectPlayers.get(boosterType).remove(playerId);
-                }
-            } else {
-                if (activeEffectPlayers.get(boosterType).contains(playerId)) {
-                    player.removePotionEffect(effectType);
-                    activeEffectPlayers.get(boosterType).remove(playerId);
+                    if (duration > 0) {
+                        duration = Math.min(duration, 72000);
+                        player.addPotionEffect(new PotionEffect(effectType, duration, amplifier, false, false));
+                        hasActiveBooster = true;
+                    }
                 }
             }
+        }
+
+        if (hasActiveBooster) {
+            playersWithBoosterEffects.add(playerId);
+        } else {
+            playersWithBoosterEffects.remove(playerId);
         }
     }
 
@@ -137,11 +165,14 @@ public class EffectBoosterListener implements Listener {
             if (booster != null && !booster.isExpired()) {
                 int amplifier = (int) (plugin.getConfigManager().getBoosterMultiplier(type) - 1);
                 int duration = (int) (booster.getRemainingSeconds() * 20);
-                duration = Math.min(duration, Integer.MAX_VALUE - 1000);
 
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.addPotionEffect(new PotionEffect(effectType, duration, amplifier, false, false));
-                    activeEffectPlayers.get(type).add(player.getUniqueId());
+                if (duration > 0) {
+                    duration = Math.min(duration, 72000);
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.addPotionEffect(new PotionEffect(effectType, duration, amplifier, false, false));
+                        playersWithBoosterEffects.add(player.getUniqueId());
+                    }
                 }
             }
         }
@@ -153,7 +184,22 @@ public class EffectBoosterListener implements Listener {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.removePotionEffect(effectType);
             }
-            activeEffectPlayers.get(type).clear();
+        }
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            boolean hasOtherEffects = false;
+            for (Map.Entry<BoosterType, PotionEffectType> entry : effectMap.entrySet()) {
+                if (entry.getKey() != type && plugin.getBoosterManager().isBoosterActive(entry.getKey())) {
+                    if (player.hasPotionEffect(entry.getValue())) {
+                        hasOtherEffects = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hasOtherEffects) {
+                playersWithBoosterEffects.remove(player.getUniqueId());
+            }
         }
     }
 
@@ -164,15 +210,30 @@ public class EffectBoosterListener implements Listener {
             if (booster != null && !booster.isExpired()) {
                 int amplifier = (int) (plugin.getConfigManager().getBoosterMultiplier(type) - 1);
                 int duration = (int) (booster.getRemainingSeconds() * 20);
-                duration = Math.min(duration, Integer.MAX_VALUE - 1000);
 
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (activeEffectPlayers.get(type).contains(player.getUniqueId())) {
-                        player.removePotionEffect(effectType);
-                        player.addPotionEffect(new PotionEffect(effectType, duration, amplifier, false, false));
+                if (duration > 0) {
+                    duration = Math.min(duration, 72000);
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (playersWithBoosterEffects.contains(player.getUniqueId())) {
+                            player.removePotionEffect(effectType);
+                            player.addPotionEffect(new PotionEffect(effectType, duration, amplifier, false, false));
+                        }
                     }
                 }
+            } else {
+                removeEffectFromAll(type);
             }
         }
+    }
+
+    private void removeAllBoosterEffects(Player player) {
+        for (PotionEffectType effectType : effectMap.values()) {
+            player.removePotionEffect(effectType);
+        }
+    }
+
+    public void cleanupOfflinePlayerEffects() {
+        playersWithBoosterEffects.clear();
     }
 }

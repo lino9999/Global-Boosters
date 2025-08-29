@@ -101,16 +101,20 @@ public class DataManager {
                     if (elapsedTime < totalDuration) {
                         long adjustedRemaining = totalDuration - elapsedTime;
 
-                        ActiveBooster booster = new ActiveBooster(
-                                type,
-                                activatorUUID,
-                                activatorName,
-                                startTime,
-                                durationMinutes,
-                                adjustedRemaining
-                        );
+                        if (adjustedRemaining > 0) {
+                            ActiveBooster booster = new ActiveBooster(
+                                    type,
+                                    activatorUUID,
+                                    activatorName,
+                                    startTime,
+                                    durationMinutes,
+                                    adjustedRemaining
+                            );
 
-                        plugin.getBoosterManager().loadBooster(booster);
+                            plugin.getBoosterManager().loadBooster(booster);
+                        } else {
+                            removeActiveBooster(type);
+                        }
                     } else {
                         removeActiveBooster(type);
                     }

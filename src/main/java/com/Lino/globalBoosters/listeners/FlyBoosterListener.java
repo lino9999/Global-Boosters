@@ -31,10 +31,16 @@ public class FlyBoosterListener implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
+        if (boosterFlyingPlayers.contains(playerId) && !player.hasPermission("globalboosters.fly.bypass")) {
+            player.setAllowFlight(false);
+            player.setFlying(false);
+            boosterFlyingPlayers.remove(playerId);
+        }
+
         if (plugin.getBoosterManager().isBoosterActive(BoosterType.FLY)) {
             ActiveBooster booster = plugin.getBoosterManager().getActiveBooster(BoosterType.FLY);
             if (booster != null && !booster.isExpired()) {
-                if (!player.getAllowFlight()) {
+                if (!player.getAllowFlight() && !player.hasPermission("globalboosters.fly.bypass")) {
                     player.setAllowFlight(true);
                     player.setFlying(true);
                     boosterFlyingPlayers.add(playerId);
@@ -61,7 +67,7 @@ public class FlyBoosterListener implements Listener {
         UUID playerId = player.getUniqueId();
 
         if (player.getAllowFlight() && plugin.getBoosterManager().isBoosterActive(BoosterType.FLY)) {
-            if (!originallyFlying.contains(playerId)) {
+            if (!originallyFlying.contains(playerId) && !player.hasPermission("globalboosters.fly.bypass")) {
                 boosterFlyingPlayers.add(playerId);
             }
         }
@@ -90,5 +96,10 @@ public class FlyBoosterListener implements Listener {
         }
         originallyFlying.clear();
         boosterFlyingPlayers.clear();
+    }
+
+    public void cleanupOfflinePlayerFly() {
+        boosterFlyingPlayers.clear();
+        originallyFlying.clear();
     }
 }

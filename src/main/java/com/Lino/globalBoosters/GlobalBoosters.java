@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.potion.PotionEffectType;
 
 public class GlobalBoosters extends JavaPlugin {
 
@@ -62,7 +63,7 @@ public class GlobalBoosters extends JavaPlugin {
             scheduledBoosterTask.cancel();
         }
 
-        cleanupActiveEffects();
+        cleanupAllEffects();
 
         if (boosterManager != null) {
             boosterManager.saveAllBoosters();
@@ -80,22 +81,35 @@ public class GlobalBoosters extends JavaPlugin {
         getLogger().info("GlobalBoosters has been disabled!");
     }
 
-    private void cleanupActiveEffects() {
+    private void cleanupAllEffects() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (effectBoosterListener != null) {
+            player.removePotionEffect(PotionEffectType.HASTE);
+            player.removePotionEffect(PotionEffectType.RESISTANCE);
+            player.removePotionEffect(PotionEffectType.JUMP_BOOST);
+            player.removePotionEffect(PotionEffectType.REGENERATION);
+            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+            player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+            player.removePotionEffect(PotionEffectType.SPEED);
+            player.removePotionEffect(PotionEffectType.STRENGTH);
+
+            if (flyBoosterListener != null) {
+                flyBoosterListener.cleanupOfflinePlayerFly();
+            }
+
+            if (boosterManager != null) {
                 for (BoosterType type : BoosterType.values()) {
-                    if (type.isEffectBooster()) {
-                        effectBoosterListener.removeEffectFromAll(type);
+                    if (type == BoosterType.FLY && boosterManager.isBoosterActive(type)) {
+                        if (!player.hasPermission("globalboosters.fly.bypass")) {
+                            player.setAllowFlight(false);
+                            player.setFlying(false);
+                        }
                     }
                 }
             }
+        }
 
-            if (flyBoosterListener != null && boosterManager != null && boosterManager.isBoosterActive(BoosterType.FLY)) {
-                if (!player.hasPermission("globalboosters.fly.bypass")) {
-                    player.setAllowFlight(false);
-                    player.setFlying(false);
-                }
-            }
+        if (effectBoosterListener != null) {
+            effectBoosterListener.cleanupOfflinePlayerEffects();
         }
     }
 

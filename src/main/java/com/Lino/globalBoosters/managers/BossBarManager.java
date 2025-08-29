@@ -28,6 +28,10 @@ public class BossBarManager {
     }
 
     public void createBossBar(ActiveBooster booster) {
+        if (booster.isExpired()) {
+            return;
+        }
+
         BossBar bossBar = Bukkit.createBossBar(
                 formatBossBarTitle(booster),
                 getBarColor(booster.getType()),
@@ -45,6 +49,11 @@ public class BossBarManager {
     }
 
     public void updateBossBar(ActiveBooster booster) {
+        if (booster.isExpired()) {
+            removeBossBar(booster.getType());
+            return;
+        }
+
         BossBar bossBar = bossBars.get(booster.getType());
         if (bossBar != null) {
             bossBar.setTitle(formatBossBarTitle(booster));

@@ -26,7 +26,7 @@ public class ActiveBooster {
         this.activatorName = activatorName;
         this.startTime = startTime;
         this.durationMinutes = durationMinutes;
-        this.remainingSeconds = remainingSeconds;
+        this.remainingSeconds = Math.max(0, remainingSeconds);
     }
 
     public void tick() {
@@ -40,10 +40,15 @@ public class ActiveBooster {
     }
 
     public double getProgress() {
-        return (double) remainingSeconds / (durationMinutes * 60);
+        if (durationMinutes * 60 == 0) return 0;
+        return Math.max(0, Math.min(1, (double) remainingSeconds / (durationMinutes * 60)));
     }
 
     public String getTimeRemaining() {
+        if (remainingSeconds <= 0) {
+            return "0s";
+        }
+
         long hours = remainingSeconds / 3600;
         long minutes = (remainingSeconds % 3600) / 60;
         long seconds = remainingSeconds % 60;
@@ -78,6 +83,6 @@ public class ActiveBooster {
     }
 
     public long getRemainingSeconds() {
-        return remainingSeconds;
+        return Math.max(0, remainingSeconds);
     }
 }

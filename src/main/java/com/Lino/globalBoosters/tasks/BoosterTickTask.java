@@ -19,12 +19,16 @@ public class BoosterTickTask extends BukkitRunnable {
         plugin.getBoosterManager().tickAllBoosters();
 
         updateCounter++;
-        if (updateCounter >= 20) {
+        if (updateCounter >= 10) {
             updateCounter = 0;
 
             for (ActiveBooster booster : plugin.getBoosterManager().getActiveBoosters()) {
-                if (booster.getType().isEffectBooster() && !booster.isExpired()) {
-                    plugin.getEffectBoosterListener().updateEffectDuration(booster.getType());
+                if (booster.getType().isEffectBooster()) {
+                    if (booster.isExpired()) {
+                        plugin.getEffectBoosterListener().removeEffectFromAll(booster.getType());
+                    } else {
+                        plugin.getEffectBoosterListener().updateEffectDuration(booster.getType());
+                    }
                 }
             }
         }
