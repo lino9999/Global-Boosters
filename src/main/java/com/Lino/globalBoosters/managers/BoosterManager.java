@@ -101,18 +101,20 @@ public class BoosterManager {
     }
 
     public void tickAllBoosters() {
-        Iterator<Map.Entry<BoosterType, ActiveBooster>> iterator = activeBoosters.entrySet().iterator();
+        List<BoosterType> toRemove = new ArrayList<>();
 
-        while (iterator.hasNext()) {
-            Map.Entry<BoosterType, ActiveBooster> entry = iterator.next();
+        for (Map.Entry<BoosterType, ActiveBooster> entry : activeBoosters.entrySet()) {
             ActiveBooster booster = entry.getValue();
-
             booster.tick();
             plugin.getBossBarManager().updateBossBar(booster);
 
             if (booster.isExpired()) {
-                deactivateBooster(entry.getKey());
+                toRemove.add(entry.getKey());
             }
+        }
+
+        for (BoosterType type : toRemove) {
+            deactivateBooster(type);
         }
     }
 
@@ -123,30 +125,55 @@ public class BoosterManager {
     }
 
     public void loadBooster(ActiveBooster booster) {
+        if (booster.isExpired()) {
+            plugin.getDataManager().removeActiveBooster(booster.getType());
+            return;
+        }
+
         activeBoosters.put(booster.getType(), booster);
         plugin.getBossBarManager().createBossBar(booster);
 
         if (booster.getType().isEffectBooster()) {
-            plugin.getEffectBoosterListener().applyEffectToAll(booster.getType());
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                plugin.getEffectBoosterListener().applyEffectToAll(booster.getType());
+            }, 20L);
         } else if (booster.getType() == BoosterType.FLY) {
-            plugin.getFlyBoosterListener().enableFlyForAll();
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                plugin.getFlyBoosterListener().enableFlyForAll();
+            }, 20L);
         }
     }
 
     public boolean isBoosterActive(BoosterType type) {
-        return activeBoosters.containsKey(type);
+        ActiveBooster booster = activeBoosters.get(type);
+        if (booster != null && booster.isExpired()) {
+            deactivateBooster(type);
+            return false;
+        }
+        return booster != null;
     }
 
     public ActiveBooster getActiveBooster(BoosterType type) {
-        return activeBoosters.get(type);
+        ActiveBooster booster = activeBoosters.get(type);
+        if (booster != null && booster.isExpired()) {
+            deactivateBooster(type);
+            return null;
+        }
+        return booster;
     }
 
     public Collection<ActiveBooster> getActiveBoosters() {
-        return activeBoosters.values();
+        List<ActiveBooster> active = new ArrayList<>();
+        for (ActiveBooster booster : activeBoosters.values()) {
+            if (!booster.isExpired()) {
+                active.add(booster);
+            }
+        }
+        return active;
     }
 
     public int getActiveBoosterCount() {
-        return activeBoosters.size();
+        return getActiveBoosters().size();
     }
 
     public double getMultiplier(BoosterType type) {

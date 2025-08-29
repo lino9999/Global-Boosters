@@ -189,7 +189,6 @@ public class BoosterItemListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         plugin.getBossBarManager().addPlayerToBossBars(event.getPlayer());
-        plugin.getEffectBoosterListener().applyActiveEffects(event.getPlayer());
     }
 
     @EventHandler

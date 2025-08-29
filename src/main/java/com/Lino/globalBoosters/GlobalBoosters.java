@@ -15,7 +15,10 @@ import com.Lino.globalBoosters.managers.BossBarManager;
 import com.Lino.globalBoosters.managers.SupplyManager;
 import com.Lino.globalBoosters.tasks.BoosterTickTask;
 import com.Lino.globalBoosters.tasks.ScheduledBoosterTask;
+import com.Lino.globalBoosters.boosters.BoosterType;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -58,6 +61,9 @@ public class GlobalBoosters extends JavaPlugin {
         if (scheduledBoosterTask != null) {
             scheduledBoosterTask.cancel();
         }
+
+        cleanupActiveEffects();
+
         if (boosterManager != null) {
             boosterManager.saveAllBoosters();
         }
@@ -72,6 +78,25 @@ public class GlobalBoosters extends JavaPlugin {
         }
 
         getLogger().info("GlobalBoosters has been disabled!");
+    }
+
+    private void cleanupActiveEffects() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (effectBoosterListener != null) {
+                for (BoosterType type : BoosterType.values()) {
+                    if (type.isEffectBooster()) {
+                        effectBoosterListener.removeEffectFromAll(type);
+                    }
+                }
+            }
+
+            if (flyBoosterListener != null && boosterManager != null && boosterManager.isBoosterActive(BoosterType.FLY)) {
+                if (!player.hasPermission("globalboosters.fly.bypass")) {
+                    player.setAllowFlight(false);
+                    player.setFlying(false);
+                }
+            }
+        }
     }
 
     private void initializeManagers() {
