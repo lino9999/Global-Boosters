@@ -1,5 +1,5 @@
 name: GlobalBoosters
-version: '2.7-BETA'
+version: '2.8-BETA'
 main: com.Lino.globalBoosters.GlobalBoosters
 api-version: '1.21'
 depend: [Vault]
@@ -27,8 +27,33 @@ permissions:
     description: Allows access to the booster shop
     default: true
   globalboosters.use:
-    description: Allows using booster items
+    description: Allows using booster items (base permission)
     default: true
+  globalboosters.use.*:
+    description: Allows using all booster types
+    default: false
+    children:
+      globalboosters.use.plant_growth: true
+      globalboosters.use.spawner_rate: true
+      globalboosters.use.exp_multiplier: true
+      globalboosters.use.mob_drop: true
+      globalboosters.use.mining_speed: true
+      globalboosters.use.fishing_luck: true
+      globalboosters.use.farming_fortune: true
+      globalboosters.use.combat_damage: true
+      globalboosters.use.haste: true
+      globalboosters.use.resistance: true
+      globalboosters.use.jump_boost: true
+      globalboosters.use.regeneration: true
+      globalboosters.use.night_vision: true
+      globalboosters.use.fire_resistance: true
+      globalboosters.use.speed: true
+      globalboosters.use.strength: true
+      globalboosters.use.no_fall_damage: true
+      globalboosters.use.hunger_saver: true
+      globalboosters.use.armor_durability: true
+      globalboosters.use.keep_inventory: true
+      globalboosters.use.fly: true
   globalboosters.use.plant_growth:
     description: Allows using Plant Growth booster
     default: false
@@ -98,6 +123,7 @@ permissions:
     children:
       globalboosters.shop: true
       globalboosters.use: true
+      globalboosters.use.*: true
       globalboosters.admin.give: true
       globalboosters.admin.reload: true
       globalboosters.admin.stats: true
