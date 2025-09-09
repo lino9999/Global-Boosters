@@ -12,6 +12,10 @@ shop_gui_enabled: true
 
 show_activator_name: true
 
+
+  # Examples: UTC, GMT, America/New_York, Europe/London, Europe/Rome,
+  # Asia/Tokyo, America/Los_Angeles, Australia/Sydney
+  # Full list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 scheduled_boosters:
   enabled: true
   timezone: "Europe/Rome"
