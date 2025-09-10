@@ -91,6 +91,14 @@ public class GlobalBoosters extends JavaPlugin {
             player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
             player.removePotionEffect(PotionEffectType.SPEED);
             player.removePotionEffect(PotionEffectType.STRENGTH);
+            player.removePotionEffect(PotionEffectType.SLOWNESS);
+            player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
+            player.removePotionEffect(PotionEffectType.WEAKNESS);
+            player.removePotionEffect(PotionEffectType.POISON);
+            player.removePotionEffect(PotionEffectType.WITHER);
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
+            player.removePotionEffect(PotionEffectType.HUNGER);
+            player.removePotionEffect(PotionEffectType.NAUSEA);
 
             if (flyBoosterListener != null) {
                 flyBoosterListener.cleanupOfflinePlayerFly();

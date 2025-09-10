@@ -43,6 +43,14 @@ public class EffectBoosterListener implements Listener {
         effectMap.put(BoosterType.FIRE_RESISTANCE, PotionEffectType.FIRE_RESISTANCE);
         effectMap.put(BoosterType.SPEED, PotionEffectType.SPEED);
         effectMap.put(BoosterType.STRENGTH, PotionEffectType.STRENGTH);
+        effectMap.put(BoosterType.SLOWNESS, PotionEffectType.SLOWNESS);
+        effectMap.put(BoosterType.MINING_FATIGUE, PotionEffectType.MINING_FATIGUE);
+        effectMap.put(BoosterType.WEAKNESS, PotionEffectType.WEAKNESS);
+        effectMap.put(BoosterType.POISON, PotionEffectType.POISON);
+        effectMap.put(BoosterType.WITHER, PotionEffectType.WITHER);
+        effectMap.put(BoosterType.BLINDNESS, PotionEffectType.BLINDNESS);
+        effectMap.put(BoosterType.HUNGER, PotionEffectType.HUNGER);
+        effectMap.put(BoosterType.NAUSEA, PotionEffectType.NAUSEA);
     }
 
     @EventHandler

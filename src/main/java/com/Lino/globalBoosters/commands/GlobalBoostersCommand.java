@@ -58,6 +58,10 @@ public class GlobalBoostersCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("");
 
         for (BoosterType type : BoosterType.values()) {
+            if (!plugin.getConfigManager().isBoosterEnabled(type)) {
+                continue;
+            }
+
             String boosterName = plugin.getMessagesManager().getBoosterName(type);
             String multiplier = "";
             if (!type.isEffectBooster() && !isNoMultiplierBooster(type)) {

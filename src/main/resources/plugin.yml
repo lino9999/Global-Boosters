@@ -54,6 +54,14 @@ permissions:
       globalboosters.use.armor_durability: true
       globalboosters.use.keep_inventory: true
       globalboosters.use.fly: true
+      globalboosters.use.slowness: true
+      globalboosters.use.mining_fatigue: true
+      globalboosters.use.weakness: true
+      globalboosters.use.poison: true
+      globalboosters.use.wither: true
+      globalboosters.use.blindness: true
+      globalboosters.use.hunger: true
+      globalboosters.use.nausea: true
   globalboosters.use.plant_growth:
     description: Allows using Plant Growth booster
     default: false
@@ -116,6 +124,30 @@ permissions:
     default: false
   globalboosters.use.fly:
     description: Allows using Fly booster
+    default: false
+  globalboosters.use.slowness:
+    description: Allows using Slowness curse
+    default: false
+  globalboosters.use.mining_fatigue:
+    description: Allows using Mining Fatigue curse
+    default: false
+  globalboosters.use.weakness:
+    description: Allows using Weakness curse
+    default: false
+  globalboosters.use.poison:
+    description: Allows using Poison curse
+    default: false
+  globalboosters.use.wither:
+    description: Allows using Wither curse
+    default: false
+  globalboosters.use.blindness:
+    description: Allows using Blindness curse
+    default: false
+  globalboosters.use.hunger:
+    description: Allows using Hunger curse
+    default: false
+  globalboosters.use.nausea:
+    description: Allows using Nausea curse
     default: false
   globalboosters.admin:
     description: Admin permission for all features

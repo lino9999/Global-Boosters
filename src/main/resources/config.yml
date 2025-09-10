@@ -12,6 +12,7 @@ shop_gui_enabled: true
 
 show_activator_name: true
 
+negative_effects_enabled: true
 
   # Examples: UTC, GMT, America/New_York, Europe/London, Europe/Rome,
   # Asia/Tokyo, America/Los_Angeles, Australia/Sydney
@@ -160,3 +161,36 @@ boosters:
     enabled: true
     price: 2500.0
     duration: 30
+  slowness:
+    enabled: true
+    price: 100.0
+    duration: 2
+    multiplier: 1.0
+  mining_fatigue:
+    enabled: true
+    price: 100.0
+    duration: 2
+  weakness:
+    enabled: true
+    price: 100.0
+    duration: 2
+  poison:
+    enabled: true
+    price: 100.0
+    duration: 2
+  wither:
+    enabled: true
+    price: 150.0
+    duration: 2
+  blindness:
+    enabled: true
+    price: 100.0
+    duration: 2
+  hunger:
+    enabled: true
+    price: 100.0
+    duration: 2
+  nausea:
+    enabled: true
+    price: 100.0
+    duration: 2

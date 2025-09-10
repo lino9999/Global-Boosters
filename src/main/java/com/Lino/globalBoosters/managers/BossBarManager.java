@@ -130,6 +130,10 @@ public class BossBarManager {
     }
 
     private BarColor getBarColor(BoosterType type) {
+        if (type.isNegativeEffect()) {
+            return BarColor.RED;
+        }
+
         switch (type) {
             case PLANT_GROWTH:
             case FARMING_FORTUNE:

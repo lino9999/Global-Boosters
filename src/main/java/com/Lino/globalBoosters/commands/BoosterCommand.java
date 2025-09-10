@@ -80,8 +80,15 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         } catch (IllegalArgumentException e) {
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.invalid-booster"));
             for (BoosterType boosterType : BoosterType.values()) {
-                sender.sendMessage(GradientColor.apply("<gradient:#808080:#A9A9A9>- </gradient><gradient:#FFA500:#FFD700>" + boosterType.name().toLowerCase() + "</gradient>"));
+                if (plugin.getConfigManager().isBoosterEnabled(boosterType)) {
+                    sender.sendMessage(GradientColor.apply("<gradient:#808080:#A9A9A9>- </gradient><gradient:#FFA500:#FFD700>" + boosterType.name().toLowerCase() + "</gradient>"));
+                }
             }
+            return true;
+        }
+
+        if (!plugin.getConfigManager().isBoosterEnabled(type)) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("booster.disabled"));
             return true;
         }
 
@@ -318,9 +325,13 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                         .map(Player::getName)
                         .collect(Collectors.toList()), args[1]);
             } else if (args.length == 3) {
-                return filterStartingWith(Arrays.stream(BoosterType.values())
-                        .map(type -> type.name().toLowerCase())
-                        .collect(Collectors.toList()), args[2]);
+                List<String> enabledBoosters = new ArrayList<>();
+                for (BoosterType type : BoosterType.values()) {
+                    if (plugin.getConfigManager().isBoosterEnabled(type)) {
+                        enabledBoosters.add(type.name().toLowerCase());
+                    }
+                }
+                return filterStartingWith(enabledBoosters, args[2]);
             } else if (args.length == 4) {
                 return Arrays.asList("30", "60", "120");
             }

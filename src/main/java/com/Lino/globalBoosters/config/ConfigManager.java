@@ -25,6 +25,7 @@ public class ConfigManager {
     private String scheduledBoostersTimezone;
     private boolean shopGuiEnabled;
     private boolean showActivatorName;
+    private boolean negativeEffectsEnabled;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -48,6 +49,7 @@ public class ConfigManager {
         keepEffectsOnDeath = config.getBoolean("keep_effects_on_death", true);
         shopGuiEnabled = config.getBoolean("shop_gui_enabled", true);
         showActivatorName = config.getBoolean("show_activator_name", true);
+        negativeEffectsEnabled = config.getBoolean("negative_effects_enabled", true);
 
         scheduledBoostersEnabled = config.getBoolean("scheduled_boosters.enabled", false);
         scheduledBoostersTimezone = config.getString("scheduled_boosters.timezone", "UTC");
@@ -66,7 +68,13 @@ public class ConfigManager {
                 config.set(path + ".duration", 30);
             }
 
-            boosterEnabled.put(type, config.getBoolean(path + ".enabled", true));
+            boolean enabled = config.getBoolean(path + ".enabled", true);
+
+            if (type.isNegativeEffect() && !negativeEffectsEnabled) {
+                enabled = false;
+            }
+
+            boosterEnabled.put(type, enabled);
             boosterPrices.put(type, config.getDouble(path + ".price"));
             boosterDurations.put(type, config.getInt(path + ".duration"));
 
@@ -97,6 +105,11 @@ public class ConfigManager {
 
             try {
                 BoosterType type = BoosterType.valueOf(schedule.getString("type", "").toUpperCase());
+
+                if (type.isNegativeEffect() && !negativeEffectsEnabled) {
+                    continue;
+                }
+
                 int hour = schedule.getInt("hour", 0);
                 int minute = schedule.getInt("minute", 0);
                 int duration = schedule.getInt("duration", 30);
@@ -149,6 +162,9 @@ public class ConfigManager {
     }
 
     public boolean isBoosterEnabled(BoosterType type) {
+        if (type.isNegativeEffect() && !negativeEffectsEnabled) {
+            return false;
+        }
         return boosterEnabled.getOrDefault(type, true);
     }
 
@@ -178,6 +194,10 @@ public class ConfigManager {
 
     public boolean isShowActivatorName() {
         return showActivatorName;
+    }
+
+    public boolean isNegativeEffectsEnabled() {
+        return negativeEffectsEnabled;
     }
 
     private boolean isNoMultiplierBooster(BoosterType type) {
@@ -238,6 +258,16 @@ public class ConfigManager {
                 return 3000.0;
             case FLY:
                 return 2500.0;
+            case SLOWNESS:
+            case MINING_FATIGUE:
+            case WEAKNESS:
+            case POISON:
+            case BLINDNESS:
+            case HUNGER:
+            case NAUSEA:
+                return 100.0;
+            case WITHER:
+                return 150.0;
             default:
                 return 1000.0;
         }

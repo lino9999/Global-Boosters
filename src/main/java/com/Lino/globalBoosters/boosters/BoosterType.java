@@ -23,7 +23,15 @@ public enum BoosterType {
     HUNGER_SAVER(Material.COOKED_BEEF, 0.5, false),
     ARMOR_DURABILITY(Material.ANVIL, 0.5, false),
     KEEP_INVENTORY(Material.ENDER_CHEST, 1.0, false),
-    FLY(Material.ELYTRA, 1.0, false);
+    FLY(Material.ELYTRA, 1.0, false),
+    SLOWNESS(Material.SOUL_SAND, 1.0, true),
+    MINING_FATIGUE(Material.PRISMARINE_SHARD, 1.0, true),
+    WEAKNESS(Material.FERMENTED_SPIDER_EYE, 1.0, true),
+    POISON(Material.SPIDER_EYE, 1.0, true),
+    WITHER(Material.WITHER_SKELETON_SKULL, 1.0, true),
+    BLINDNESS(Material.INK_SAC, 1.0, true),
+    HUNGER(Material.ROTTEN_FLESH, 1.0, true),
+    NAUSEA(Material.PUFFERFISH, 1.0, true);
 
     private final Material icon;
     private final double defaultMultiplier;
@@ -49,5 +57,21 @@ public enum BoosterType {
 
     public boolean isEffectBooster() {
         return isEffectBooster;
+    }
+
+    public boolean isNegativeEffect() {
+        switch (this) {
+            case SLOWNESS:
+            case MINING_FATIGUE:
+            case WEAKNESS:
+            case POISON:
+            case WITHER:
+            case BLINDNESS:
+            case HUNGER:
+            case NAUSEA:
+                return true;
+            default:
+                return false;
+        }
     }
 }

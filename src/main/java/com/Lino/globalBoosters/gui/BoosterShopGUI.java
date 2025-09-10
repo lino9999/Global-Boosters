@@ -22,24 +22,26 @@ public class BoosterShopGUI {
     private final GlobalBoosters plugin;
     private final Player player;
     private final Inventory inventory;
+    private final Map<Integer, BoosterType> slotToBooster;
 
     private static final int[] BOOSTER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+            37, 38, 39, 40, 41, 42, 43,
+            46, 47, 48, 49, 50, 51, 52
     };
 
     private static final int[] DECORATION_SLOTS = {
             0, 1, 2, 3, 4, 5, 6, 7, 8,
-            9, 17, 18, 26, 27, 35, 36, 44,
-            45, 46, 47, 48, 49, 50, 51, 52, 53
+            9, 17, 18, 26, 27, 35, 36, 44, 45, 53
     };
 
     public BoosterShopGUI(GlobalBoosters plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
         this.inventory = Bukkit.createInventory(null, 54, plugin.getMessagesManager().getMessage("shop.title"));
+        this.slotToBooster = new HashMap<>();
 
         setupGUI();
     }
@@ -47,14 +49,24 @@ public class BoosterShopGUI {
     private void setupGUI() {
         fillDecoration();
 
-        BoosterType[] types = BoosterType.values();
-        int slotIndex = 0;
+        List<BoosterType> availableBoosters = new ArrayList<>();
 
-        for (int i = 0; i < types.length && slotIndex < BOOSTER_SLOTS.length; i++) {
-            if (plugin.getConfigManager().isBoosterEnabled(types[i])) {
-                inventory.setItem(BOOSTER_SLOTS[slotIndex], createBoosterItem(types[i]));
-                slotIndex++;
+        for (BoosterType type : BoosterType.values()) {
+            if (plugin.getConfigManager().isBoosterEnabled(type)) {
+                String boosterPermission = "globalboosters.use." + type.name().toLowerCase();
+                if (player.hasPermission(boosterPermission) || player.hasPermission("globalboosters.use.*")) {
+                    availableBoosters.add(type);
+                }
             }
+        }
+
+        int slotIndex = 0;
+        for (int i = 0; i < availableBoosters.size() && slotIndex < BOOSTER_SLOTS.length; i++) {
+            BoosterType type = availableBoosters.get(i);
+            int slot = BOOSTER_SLOTS[slotIndex];
+            inventory.setItem(slot, createBoosterItem(type));
+            slotToBooster.put(slot, type);
+            slotIndex++;
         }
     }
 
@@ -149,27 +161,11 @@ public class BoosterShopGUI {
     }
 
     public void handleClick(int slot) {
-        int boosterIndex = -1;
-        for (int i = 0; i < BOOSTER_SLOTS.length; i++) {
-            if (BOOSTER_SLOTS[i] == slot) {
-                boosterIndex = i;
-                break;
-            }
-        }
+        BoosterType type = slotToBooster.get(slot);
 
-        if (boosterIndex == -1) {
+        if (type == null) {
             return;
         }
-
-        BoosterType[] enabledTypes = Arrays.stream(BoosterType.values())
-                .filter(type -> plugin.getConfigManager().isBoosterEnabled(type))
-                .toArray(BoosterType[]::new);
-
-        if (boosterIndex >= enabledTypes.length) {
-            return;
-        }
-
-        BoosterType type = enabledTypes[boosterIndex];
 
         if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
             if (!plugin.getSupplyManager().canPurchase(type)) {

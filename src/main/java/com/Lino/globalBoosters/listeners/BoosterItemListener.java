@@ -60,13 +60,19 @@ public class BoosterItemListener implements Listener {
             return;
         }
 
+        if (!plugin.getConfigManager().isBoosterEnabled(type)) {
+            player.sendMessage(plugin.getMessagesManager().getMessage("booster.disabled"));
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
+
         if (!player.hasPermission("globalboosters.use")) {
             player.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission-use"));
             return;
         }
 
         String boosterPermission = "globalboosters.use." + type.name().toLowerCase();
-        if (!player.hasPermission(boosterPermission)) {
+        if (!player.hasPermission(boosterPermission) && !player.hasPermission("globalboosters.use.*")) {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
             player.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission-booster", placeholders));
