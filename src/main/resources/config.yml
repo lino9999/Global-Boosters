@@ -163,34 +163,34 @@ boosters:
     duration: 30
   slowness:
     enabled: true
-    price: 100.0
-    duration: 2
+    price: 10000.0
+    duration: 1
     multiplier: 1.0
   mining_fatigue:
     enabled: true
-    price: 100.0
-    duration: 2
+    price: 10000.0
+    duration: 1
   weakness:
     enabled: true
-    price: 100.0
-    duration: 2
+    price: 10000.0
+    duration: 1
   poison:
     enabled: true
-    price: 100.0
-    duration: 2
+    price: 10000.0
+    duration: 1
   wither:
     enabled: true
-    price: 150.0
-    duration: 2
+    price: 10000.0
+    duration: 1
   blindness:
     enabled: true
-    price: 100.0
-    duration: 2
+    price: 10000.0
+    duration: 1
   hunger:
     enabled: true
-    price: 100.0
-    duration: 2
+    price: 10000.0
+    duration: 1
   nausea:
     enabled: true
-    price: 100.0
-    duration: 2
+    price: 10000.0
+    duration: 1
