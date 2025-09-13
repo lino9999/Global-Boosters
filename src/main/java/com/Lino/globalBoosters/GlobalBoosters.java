@@ -15,6 +15,7 @@ import com.Lino.globalBoosters.managers.BossBarManager;
 import com.Lino.globalBoosters.managers.SupplyManager;
 import com.Lino.globalBoosters.tasks.BoosterTickTask;
 import com.Lino.globalBoosters.tasks.ScheduledBoosterTask;
+import com.Lino.globalBoosters.tasks.RandomScheduledBoosterTask;
 import com.Lino.globalBoosters.boosters.BoosterType;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -38,6 +39,7 @@ public class GlobalBoosters extends JavaPlugin {
     private FlyBoosterListener flyBoosterListener;
     private SupplyManager supplyManager;
     private BukkitTask scheduledBoosterTask;
+    private BukkitTask randomScheduledBoosterTask;
 
     @Override
     public void onEnable() {
@@ -61,6 +63,10 @@ public class GlobalBoosters extends JavaPlugin {
     public void onDisable() {
         if (scheduledBoosterTask != null) {
             scheduledBoosterTask.cancel();
+        }
+
+        if (randomScheduledBoosterTask != null) {
+            randomScheduledBoosterTask.cancel();
         }
 
         cleanupAllEffects();
@@ -163,6 +169,10 @@ public class GlobalBoosters extends JavaPlugin {
         if (configManager.isScheduledBoostersEnabled()) {
             scheduledBoosterTask = new ScheduledBoosterTask(this).runTaskTimer(this, 100L, 1200L);
         }
+
+        if (configManager.isRandomScheduledEnabled()) {
+            randomScheduledBoosterTask = new RandomScheduledBoosterTask(this).runTaskTimer(this, 20L, 20L);
+        }
     }
 
     public void reloadScheduledTask() {
@@ -171,8 +181,17 @@ public class GlobalBoosters extends JavaPlugin {
             scheduledBoosterTask = null;
         }
 
+        if (randomScheduledBoosterTask != null) {
+            randomScheduledBoosterTask.cancel();
+            randomScheduledBoosterTask = null;
+        }
+
         if (configManager.isScheduledBoostersEnabled()) {
             scheduledBoosterTask = new ScheduledBoosterTask(this).runTaskTimer(this, 100L, 1200L);
+        }
+
+        if (configManager.isRandomScheduledEnabled()) {
+            randomScheduledBoosterTask = new RandomScheduledBoosterTask(this).runTaskTimer(this, 100L, 1200L);
         }
     }
 

@@ -16,11 +16,10 @@ negative_effects_enabled: true
 
   # Examples: UTC, GMT, America/New_York, Europe/London, Europe/Rome,
   # Asia/Tokyo, America/Los_Angeles, Australia/Sydney
-  # Full list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# Full list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 scheduled_boosters:
   enabled: true
   timezone: "Europe/Rome"
-
   schedules:
     strength_morning:
       enabled: false
@@ -58,6 +57,34 @@ scheduled_boosters:
       days:
         - SATURDAY
         - SUNDAY
+
+random_scheduled_boosters:
+  enabled: true
+  interval_minutes: 30
+  duration_minutes: 5
+  activator_name: "Server"
+  booster_pool:
+    - PLANT_GROWTH
+    - SPAWNER_RATE
+    - EXP_MULTIPLIER
+    - MOB_DROP
+    - MINING_SPEED
+    - FISHING_LUCK
+    - FARMING_FORTUNE
+    - COMBAT_DAMAGE
+    - HASTE
+    - RESISTANCE
+    - JUMP_BOOST
+    - REGENERATION
+    - NIGHT_VISION
+    - FIRE_RESISTANCE
+    - SPEED
+    - STRENGTH
+    - NO_FALL_DAMAGE
+    - HUNGER_SAVER
+    - ARMOR_DURABILITY
+    - KEEP_INVENTORY
+    - FLY
 
 boosters:
   plant_growth:
@@ -170,27 +197,34 @@ boosters:
     enabled: true
     price: 10000.0
     duration: 1
+    multiplier: 1.0
   weakness:
     enabled: true
     price: 10000.0
     duration: 1
+    multiplier: 1.0
   poison:
     enabled: true
     price: 10000.0
     duration: 1
+    multiplier: 1.0
   wither:
     enabled: true
     price: 10000.0
     duration: 1
+    multiplier: 1.0
   blindness:
     enabled: true
     price: 10000.0
     duration: 1
+    multiplier: 1.0
   hunger:
     enabled: true
     price: 10000.0
     duration: 1
+    multiplier: 1.0
   nausea:
     enabled: true
     price: 10000.0
     duration: 1
+    multiplier: 1.0

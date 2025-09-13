@@ -51,6 +51,8 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                 return handleShop(sender);
             case "schedule":
                 return handleSchedule(sender);
+            case "random":
+                return handleRandom(sender);
             default:
                 sendHelp(sender);
                 return true;
@@ -282,6 +284,50 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleRandom(CommandSender sender) {
+        if (!sender.hasPermission("globalboosters.admin")) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
+            return true;
+        }
+
+        sender.sendMessage("");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.random.header"));
+        sender.sendMessage("");
+
+        if (!plugin.getConfigManager().isRandomScheduledEnabled()) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.random.disabled"));
+            sender.sendMessage("");
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.random.footer"));
+            return true;
+        }
+
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%interval%", String.valueOf(plugin.getConfigManager().getRandomScheduledInterval()));
+        placeholders.put("%duration%", String.valueOf(plugin.getConfigManager().getRandomScheduledDuration()));
+        placeholders.put("%activator%", plugin.getConfigManager().getRandomScheduledActivatorName());
+
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.random.info", placeholders));
+        sender.sendMessage("");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.random.pool-header"));
+
+        List<String> boosterPool = plugin.getConfigManager().getRandomScheduledBoosters();
+        for (String boosterName : boosterPool) {
+            try {
+                BoosterType type = BoosterType.valueOf(boosterName.toUpperCase());
+                if (plugin.getConfigManager().isBoosterEnabled(type)) {
+                    String name = plugin.getMessagesManager().getBoosterNameRaw(type);
+                    sender.sendMessage(GradientColor.apply("<gradient:#808080:#A9A9A9>• </gradient>") + plugin.getMessagesManager().getBoosterName(type));
+                }
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+        }
+
+        sender.sendMessage("");
+        sender.sendMessage(plugin.getMessagesManager().getMessage("commands.random.footer"));
+        return true;
+    }
+
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.help-header"));
         sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-shop"));
@@ -296,6 +342,7 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         }
         if (sender.hasPermission("globalboosters.admin")) {
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-schedule"));
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-random"));
         }
     }
 
@@ -315,6 +362,7 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
             }
             if (sender.hasPermission("globalboosters.admin")) {
                 subCommands.add("schedule");
+                subCommands.add("random");
             }
             return filterStartingWith(subCommands, args[0]);
         }

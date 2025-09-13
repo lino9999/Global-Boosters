@@ -26,6 +26,11 @@ public class ConfigManager {
     private boolean shopGuiEnabled;
     private boolean showActivatorName;
     private boolean negativeEffectsEnabled;
+    private boolean randomScheduledEnabled;
+    private int randomScheduledInterval;
+    private int randomScheduledDuration;
+    private String randomScheduledActivatorName;
+    private List<String> randomScheduledBoosters;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -34,6 +39,7 @@ public class ConfigManager {
         this.boosterMultipliers = new HashMap<>();
         this.boosterEnabled = new HashMap<>();
         this.scheduledBoosters = new ArrayList<>();
+        this.randomScheduledBoosters = new ArrayList<>();
 
         loadConfig();
     }
@@ -54,6 +60,21 @@ public class ConfigManager {
         scheduledBoostersEnabled = config.getBoolean("scheduled_boosters.enabled", false);
         scheduledBoostersTimezone = config.getString("scheduled_boosters.timezone", "UTC");
         loadScheduledBoosters(config);
+
+        randomScheduledEnabled = config.getBoolean("random_scheduled_boosters.enabled", false);
+        randomScheduledInterval = config.getInt("random_scheduled_boosters.interval_minutes", 60);
+        randomScheduledDuration = config.getInt("random_scheduled_boosters.duration_minutes", 30);
+        randomScheduledActivatorName = config.getString("random_scheduled_boosters.activator_name", "Lucky Draw");
+        randomScheduledBoosters = config.getStringList("random_scheduled_boosters.booster_pool");
+
+        if (randomScheduledBoosters.isEmpty() && randomScheduledEnabled) {
+            for (BoosterType type : BoosterType.values()) {
+                if (!type.isNegativeEffect()) {
+                    randomScheduledBoosters.add(type.name());
+                }
+            }
+            config.set("random_scheduled_boosters.booster_pool", randomScheduledBoosters);
+        }
 
         for (BoosterType type : BoosterType.values()) {
             String path = "boosters." + type.name().toLowerCase();
@@ -200,6 +221,26 @@ public class ConfigManager {
         return negativeEffectsEnabled;
     }
 
+    public boolean isRandomScheduledEnabled() {
+        return randomScheduledEnabled;
+    }
+
+    public int getRandomScheduledInterval() {
+        return randomScheduledInterval;
+    }
+
+    public int getRandomScheduledDuration() {
+        return randomScheduledDuration;
+    }
+
+    public String getRandomScheduledActivatorName() {
+        return randomScheduledActivatorName;
+    }
+
+    public List<String> getRandomScheduledBoosters() {
+        return new ArrayList<>(randomScheduledBoosters);
+    }
+
     private boolean isNoMultiplierBooster(BoosterType type) {
         switch (type) {
             case NO_FALL_DAMAGE:
@@ -218,6 +259,7 @@ public class ConfigManager {
         boosterMultipliers.clear();
         boosterEnabled.clear();
         scheduledBoosters.clear();
+        randomScheduledBoosters.clear();
         loadConfig();
     }
 
