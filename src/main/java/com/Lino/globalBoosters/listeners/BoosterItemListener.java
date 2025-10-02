@@ -13,13 +13,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -46,7 +45,6 @@ public class BoosterItemListener implements Listener {
 
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
-
         if (!BoosterItem.isBoosterItem(item)) {
             return;
         }
@@ -55,14 +53,15 @@ public class BoosterItemListener implements Listener {
 
         BoosterType type = BoosterItem.getBoosterType(item);
         int duration = BoosterItem.getBoosterDuration(item);
-
         if (type == null) {
             return;
         }
 
+        float volume = (float) plugin.getConfigManager().getSoundVolume();
+
         if (!plugin.getConfigManager().isBoosterEnabled(type)) {
             player.sendMessage(plugin.getMessagesManager().getMessage("booster.disabled"));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
             return;
         }
 
@@ -76,13 +75,13 @@ public class BoosterItemListener implements Listener {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
             player.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission-booster", placeholders));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
             return;
         }
 
         if (plugin.getBoosterManager().isBoosterActive(type)) {
             player.sendMessage(plugin.getMessagesManager().getMessage("booster.already-active"));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
             return;
         }
 
@@ -91,15 +90,15 @@ public class BoosterItemListener implements Listener {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("%max%", String.valueOf(maxActive));
             player.sendMessage(plugin.getMessagesManager().getMessage("booster.max-active-reached", placeholders));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
             return;
         }
 
         if (plugin.getBoosterManager().activateBooster(type, player, duration)) {
             item.setAmount(item.getAmount() - 1);
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, volume, 1.0f);
         } else {
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
         }
     }
 
@@ -160,7 +159,6 @@ public class BoosterItemListener implements Listener {
 
         if (shopGUIs.containsKey(player)) {
             event.setCancelled(true);
-
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
                 return;
             }
@@ -171,7 +169,6 @@ public class BoosterItemListener implements Listener {
             }
         } else if (confirmGUIs.containsKey(player)) {
             event.setCancelled(true);
-
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
                 return;
             }

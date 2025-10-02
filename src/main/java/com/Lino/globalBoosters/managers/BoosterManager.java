@@ -116,7 +116,6 @@ public class BoosterManager {
         if (booster != null) {
             plugin.getBossBarManager().removeBossBar(type);
             plugin.getDataManager().removeActiveBooster(type);
-
             if (type.isEffectBooster()) {
                 plugin.getEffectBoosterListener().removeEffectFromAll(type);
             } else if (type == BoosterType.FLY) {
@@ -130,7 +129,6 @@ public class BoosterManager {
 
     public void tickAllBoosters() {
         List<BoosterType> toRemove = new ArrayList<>();
-
         for (Map.Entry<BoosterType, ActiveBooster> entry : activeBoosters.entrySet()) {
             ActiveBooster booster = entry.getValue();
             booster.tick();
@@ -160,7 +158,6 @@ public class BoosterManager {
 
         activeBoosters.put(booster.getType(), booster);
         plugin.getBossBarManager().createBossBar(booster);
-
         if (booster.getType().isEffectBooster()) {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 plugin.getEffectBoosterListener().applyEffectToAll(booster.getType());
@@ -233,8 +230,10 @@ public class BoosterManager {
     }
 
     private void playGlobalSound(Sound sound, float volume, float pitch) {
+        float finalVolume = (float) (volume * plugin.getConfigManager().getSoundVolume());
+        if (finalVolume <= 0) return;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.playSound(player.getLocation(), sound, volume, pitch);
+            player.playSound(player.getLocation(), sound, finalVolume, pitch);
         }
     }
 }

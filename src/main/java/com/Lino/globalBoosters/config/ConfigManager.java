@@ -31,6 +31,7 @@ public class ConfigManager {
     private int randomScheduledDuration;
     private String randomScheduledActivatorName;
     private List<String> randomScheduledBoosters;
+    private double soundVolume;
 
     public ConfigManager(GlobalBoosters plugin) {
         this.plugin = plugin;
@@ -56,6 +57,7 @@ public class ConfigManager {
         shopGuiEnabled = config.getBoolean("shop_gui_enabled", true);
         showActivatorName = config.getBoolean("show_activator_name", true);
         negativeEffectsEnabled = config.getBoolean("negative_effects_enabled", true);
+        soundVolume = config.getDouble("sound_volume", 1.0);
 
         scheduledBoostersEnabled = config.getBoolean("scheduled_boosters.enabled", false);
         scheduledBoostersTimezone = config.getString("scheduled_boosters.timezone", "UTC");
@@ -77,7 +79,8 @@ public class ConfigManager {
         }
 
         for (BoosterType type : BoosterType.values()) {
-            String path = "boosters." + type.name().toLowerCase();
+            String path = "boosters."
+                    + type.name().toLowerCase();
 
             if (!config.contains(path + ".enabled")) {
                 config.set(path + ".enabled", true);
@@ -90,7 +93,6 @@ public class ConfigManager {
             }
 
             boolean enabled = config.getBoolean(path + ".enabled", true);
-
             if (type.isNegativeEffect() && !negativeEffectsEnabled) {
                 enabled = false;
             }
@@ -112,7 +114,6 @@ public class ConfigManager {
 
     private void loadScheduledBoosters(FileConfiguration config) {
         scheduledBoosters.clear();
-
         ConfigurationSection schedules = config.getConfigurationSection("scheduled_boosters.schedules");
         if (schedules == null) {
             return;
@@ -126,7 +127,6 @@ public class ConfigManager {
 
             try {
                 BoosterType type = BoosterType.valueOf(schedule.getString("type", "").toUpperCase());
-
                 if (type.isNegativeEffect() && !negativeEffectsEnabled) {
                     continue;
                 }
@@ -239,6 +239,10 @@ public class ConfigManager {
 
     public List<String> getRandomScheduledBoosters() {
         return new ArrayList<>(randomScheduledBoosters);
+    }
+
+    public double getSoundVolume() {
+        return soundVolume;
     }
 
     private boolean isNoMultiplierBooster(BoosterType type) {

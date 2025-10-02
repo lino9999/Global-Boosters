@@ -38,7 +38,6 @@ public class ConfirmPurchaseGUI {
         ItemStack grayGlass = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .setDisplayName(" ")
                 .build();
-
         for (int i = 0; i < 27; i++) {
             inventory.setItem(i, grayGlass);
         }
@@ -46,7 +45,6 @@ public class ConfirmPurchaseGUI {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(boosterType));
         placeholders.put("%price%", String.format("%.2f", price));
-
         ItemStack confirmItem = new ItemBuilder(Material.LIME_WOOL)
                 .setDisplayName(plugin.getMessagesManager().getMessage("shop.confirm.button"))
                 .setLore(Arrays.asList(
@@ -57,7 +55,6 @@ public class ConfirmPurchaseGUI {
                         plugin.getMessagesManager().getMessage("shop.confirm.click-confirm")
                 ))
                 .build();
-
         ItemStack cancelItem = new ItemBuilder(Material.RED_WOOL)
                 .setDisplayName(plugin.getMessagesManager().getMessage("shop.confirm.cancel"))
                 .setLore(Arrays.asList(
@@ -67,7 +64,6 @@ public class ConfirmPurchaseGUI {
                         plugin.getMessagesManager().getMessage("shop.confirm.click-cancel")
                 ))
                 .build();
-
         ItemStack infoItem = new ItemBuilder(boosterType.getIcon())
                 .setDisplayName(plugin.getMessagesManager().getMessage("shop.confirm.info-title", placeholders))
                 .setLore(Arrays.asList(
@@ -80,7 +76,6 @@ public class ConfirmPurchaseGUI {
                 ))
                 .addGlow(true)
                 .build();
-
         inventory.setItem(11, confirmItem);
         inventory.setItem(13, infoItem);
         inventory.setItem(15, cancelItem);
@@ -88,7 +83,8 @@ public class ConfirmPurchaseGUI {
 
     public void open() {
         player.openInventory(inventory);
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f, 1.5f);
+        float volume = (float) (plugin.getConfigManager().getSoundVolume() * 0.5f);
+        if (volume > 0) player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, volume, 1.5f);
 
         BoosterItemListener listener = getBoosterItemListener();
         if (listener != null) {
@@ -107,10 +103,14 @@ public class ConfirmPurchaseGUI {
     }
 
     private void purchaseBooster() {
+        float volume = (float) plugin.getConfigManager().getSoundVolume();
+
         if (!plugin.getEconomy().has(player, price)) {
             player.sendMessage(plugin.getMessagesManager().getMessage("purchase.not-enough-money",
-                    new HashMap<String, String>() {{ put("%price%", String.format("%.2f", price)); }}));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                    new HashMap<String, String>() {{
+                        put("%price%", String.format("%.2f", price));
+                    }}));
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
             player.closeInventory();
             return;
         }
@@ -120,21 +120,20 @@ public class ConfirmPurchaseGUI {
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(boosterType));
                 player.sendMessage(plugin.getMessagesManager().getMessage("purchase.out-of-stock", placeholders));
-                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
                 player.closeInventory();
                 return;
             }
         }
 
         plugin.getEconomy().withdrawPlayer(player, price);
-
         if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
             if (!plugin.getSupplyManager().recordPurchase(boosterType)) {
                 plugin.getEconomy().depositPlayer(player, price);
                 Map<String, String> placeholders2 = new HashMap<>();
                 placeholders2.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(boosterType));
                 player.sendMessage(plugin.getMessagesManager().getMessage("purchase.out-of-stock", placeholders2));
-                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
                 player.closeInventory();
                 return;
             }
@@ -144,7 +143,6 @@ public class ConfirmPurchaseGUI {
                 boosterType,
                 plugin.getConfigManager().getBoosterDuration(boosterType)
         );
-
         if (player.getInventory().firstEmpty() == -1) {
             player.getWorld().dropItem(player.getLocation(), boosterItem);
             player.sendMessage(plugin.getMessagesManager().getMessage("purchase.inventory-full"));
@@ -155,9 +153,8 @@ public class ConfirmPurchaseGUI {
         Map<String, String> placeholders3 = new HashMap<>();
         placeholders3.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(boosterType));
         placeholders3.put("%price%", String.format("%.2f", price));
-
         player.sendMessage(plugin.getMessagesManager().getMessage("purchase.success", placeholders3));
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+        if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, volume, 1.0f);
         player.closeInventory();
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {

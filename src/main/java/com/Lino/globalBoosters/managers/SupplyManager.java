@@ -8,11 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SupplyManager {
 
@@ -42,7 +40,6 @@ public class SupplyManager {
                     "booster_type VARCHAR(50) PRIMARY KEY," +
                     "purchase_count INTEGER DEFAULT 0," +
                     "last_reset BIGINT DEFAULT 0)";
-
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute(createTable);
             }
@@ -54,7 +51,6 @@ public class SupplyManager {
 
     private void loadData() {
         String query = "SELECT * FROM supply_data";
-
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
@@ -83,7 +79,6 @@ public class SupplyManager {
 
     private void saveBoosterData(BoosterType type) {
         String query = "INSERT OR REPLACE INTO supply_data (booster_type, purchase_count, last_reset) VALUES (?, ?, ?)";
-
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, type.name());
             pstmt.setInt(2, purchaseCounts.get(type));
@@ -141,14 +136,12 @@ public class SupplyManager {
 
         long nextReset = getNextResetTime();
         long timeRemaining = nextReset - System.currentTimeMillis();
-
         if (timeRemaining <= 0) {
             return "Resetting soon...";
         }
 
         long hours = timeRemaining / (1000 * 60 * 60);
         long minutes = (timeRemaining % (1000 * 60 * 60)) / (1000 * 60);
-
         if (hours > 0) {
             return String.format("%dh %dm", hours, minutes);
         } else {
@@ -170,7 +163,6 @@ public class SupplyManager {
 
     private void resetAllSupplies() {
         boolean wasReset = false;
-
         for (BoosterType type : BoosterType.values()) {
             if (purchaseCounts.get(type) > 0) {
                 wasReset = true;
@@ -189,8 +181,10 @@ public class SupplyManager {
         String message = plugin.getMessagesManager().getMessage("supply.restocked");
         Bukkit.broadcastMessage(message);
 
+        float volume = (float) plugin.getConfigManager().getSoundVolume();
+        if (volume <= 0) return;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, volume, 1.5f);
         }
     }
 

@@ -12,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,6 @@ public class BoosterShopGUI {
 
     private void setupGUI() {
         fillDecoration();
-
         List<BoosterType> availableBoosters = new ArrayList<>();
 
         for (BoosterType type : BoosterType.values()) {
@@ -74,7 +72,6 @@ public class BoosterShopGUI {
         ItemStack decorationItem = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE)
                 .setDisplayName(" ")
                 .build();
-
         for (int slot : DECORATION_SLOTS) {
             inventory.setItem(slot, decorationItem);
         }
@@ -86,14 +83,12 @@ public class BoosterShopGUI {
         boolean isActive = plugin.getBoosterManager().isBoosterActive(type);
         boolean limitedSupply = plugin.getConfigManager().isLimitedSupplyEnabled();
         int remaining = plugin.getSupplyManager().getRemainingPurchases(type);
-
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%duration%", String.valueOf(duration));
         placeholders.put("%price%", String.format("%.2f", price));
 
         List<String> lore = new ArrayList<>();
         lore.add("");
-
         if (!isNoMultiplierBooster(type) && (!type.isEffectBooster() || type == BoosterType.PLANT_GROWTH)) {
             double multiplier = plugin.getConfigManager().getBoosterMultiplier(type);
             placeholders.put("%multiplier%", String.valueOf(multiplier));
@@ -102,7 +97,6 @@ public class BoosterShopGUI {
 
         lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.duration", placeholders));
         lore.add(plugin.getMessagesManager().getMessage("shop.item-lore.price", placeholders));
-
         if (limitedSupply) {
             lore.add("");
             if (remaining > 0) {
@@ -152,7 +146,8 @@ public class BoosterShopGUI {
 
     public void open() {
         player.openInventory(inventory);
-        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1.0f);
+        float volume = (float) (plugin.getConfigManager().getSoundVolume() * 0.5f);
+        if (volume > 0) player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, volume, 1.0f);
 
         BoosterItemListener listener = getBoosterItemListener();
         if (listener != null) {
@@ -162,28 +157,28 @@ public class BoosterShopGUI {
 
     public void handleClick(int slot) {
         BoosterType type = slotToBooster.get(slot);
-
         if (type == null) {
             return;
         }
+
+        float volume = (float) plugin.getConfigManager().getSoundVolume();
 
         if (plugin.getConfigManager().isLimitedSupplyEnabled()) {
             if (!plugin.getSupplyManager().canPurchase(type)) {
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("%booster%", plugin.getMessagesManager().getBoosterNameRaw(type));
                 player.sendMessage(plugin.getMessagesManager().getMessage("purchase.out-of-stock", placeholders));
-                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
                 return;
             }
         }
 
         double price = plugin.getConfigManager().getBoosterPrice(type);
-
         if (!plugin.getEconomy().has(player, price)) {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("%price%", String.format("%.2f", price));
             player.sendMessage(plugin.getMessagesManager().getMessage("purchase.not-enough-money", placeholders));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            if (volume > 0) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, volume, 1.0f);
             return;
         }
 
