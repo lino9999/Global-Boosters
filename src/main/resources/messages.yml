@@ -79,8 +79,8 @@ booster:
   max-active-reached: "<gradient:#FF6347:#FF0000>⚠ Maximum active boosters reached! (%max% boosters)</gradient>"
   disabled: "<gradient:#FF0000:#FF6B6B>✖ This booster type is currently disabled!</gradient>"
   activated: "%prefix%<gradient:#00CED1:#1E90FF>%player%</gradient> <gradient:#808080:#A9A9A9>activated</gradient> %booster% <gradient:#808080:#A9A9A9>for</gradient> <gradient:#32CD32:#00FF00>%duration% minutes</gradient><gradient:#808080:#A9A9A9>!</gradient>"
-  activated-scheduled: "%prefix%<gradient:#9370DB:#8B008B>⏰ Scheduled activation:</gradient> %booster% <gradient:#808080:#A9A9A9>for</gradient> <gradient:#32CD32:#00FF00>%duration% minutes</gradient><gradient:#808080:#A9A9A9>!</gradient>"
-  activated-random: "%prefix%<gradient:#FFD700:#FF1493>🎲 Random booster activated:</gradient> %booster% <gradient:#808080:#A9A9A9>for</gradient> <gradient:#32CD32:#00FF00>%duration% minutes</gradient><gradient:#808080:#A9A9A9>!</gradient>"
+  activated-scheduled: "<gradient:#9370DB:#8B008B>Scheduled activation:</gradient> %booster% <gradient:#808080:#A9A9A9>for</gradient> <gradient:#32CD32:#00FF00>%duration% minutes</gradient><gradient:#808080:#A9A9A9>!</gradient>"
+  activated-random: "<gradient:#9370DB:#8B008B>Random booster activated:</gradient> %booster% <gradient:#808080:#A9A9A9>for</gradient> <gradient:#32CD32:#00FF00>%duration% minutes</gradient><gradient:#808080:#A9A9A9>!</gradient>"
   expired: "%prefix%%booster% <gradient:#FF6347:#FF0000>has expired!</gradient>"
   item-name: "<gradient:#FFD700:#FF8C00>★ %booster% ★</gradient>"
   item-lore:
