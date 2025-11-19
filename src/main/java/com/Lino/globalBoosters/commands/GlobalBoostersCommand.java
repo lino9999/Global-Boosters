@@ -48,6 +48,8 @@ public class GlobalBoostersCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("");
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.admin-header"));
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-give"));
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-start"));
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-stop"));
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-reload"));
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-stats"));
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-schedule"));

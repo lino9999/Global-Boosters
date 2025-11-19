@@ -415,6 +415,8 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-stats"));
         }
         if (sender.hasPermission("globalboosters.admin")) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-start"));
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-stop"));
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-schedule"));
             sender.sendMessage(plugin.getMessagesManager().getMessage("commands.help.booster-random"));
         }

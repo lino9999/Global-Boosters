@@ -112,6 +112,8 @@ commands:
     globalboosters-list: "<gradient:#00CED1:#00BFFF>/globalboosters list</gradient> <gradient:#808080:#A9A9A9>- List all active boosters</gradient>"
     booster-shop: "<gradient:#00CED1:#00BFFF>/booster shop</gradient> <gradient:#808080:#A9A9A9>- Open the booster shop</gradient>"
     booster-give: "<gradient:#00CED1:#00BFFF>/booster give <player> <type> [duration]</gradient> <gradient:#808080:#A9A9A9>- Give a booster</gradient>"
+    booster-start: "<gradient:#00CED1:#00BFFF>/booster start <type> <duration> [activator]</gradient> <gradient:#808080:#A9A9A9>- Start a booster</gradient>"
+    booster-stop: "<gradient:#00CED1:#00BFFF>/booster stop <type></gradient> <gradient:#808080:#A9A9A9>- Stop a booster</gradient>"
     booster-reload: "<gradient:#00CED1:#00BFFF>/booster reload</gradient> <gradient:#808080:#A9A9A9>- Reload configuration</gradient>"
     booster-stats: "<gradient:#00CED1:#00BFFF>/booster stats</gradient> <gradient:#808080:#A9A9A9>- View booster statistics</gradient>"
     booster-schedule: "<gradient:#00CED1:#00BFFF>/booster schedule</gradient> <gradient:#808080:#A9A9A9>- View scheduled boosters info</gradient>"
