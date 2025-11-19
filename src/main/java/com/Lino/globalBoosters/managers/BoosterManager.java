@@ -111,7 +111,36 @@ public class BoosterManager {
         return true;
     }
 
-    public void deactivateBooster(BoosterType type) {
+    public boolean activateConsoleBooster(BoosterType type, String activatorName, int durationMinutes) {
+        if (isBoosterActive(type)) {
+            return false;
+        }
+
+        int maxActive = plugin.getConfigManager().getMaxActiveBoosters();
+        if (maxActive != -1 && activeBoosters.size() >= maxActive) {
+            return false;
+        }
+
+        ActiveBooster booster = new ActiveBooster(type, UUID.randomUUID(), activatorName, durationMinutes);
+        activeBoosters.put(type, booster);
+
+        plugin.getBossBarManager().createBossBar(booster);
+        plugin.getDataManager().saveActiveBooster(booster);
+        plugin.getDataManager().incrementBoosterUsage(type);
+
+        if (type.isEffectBooster()) {
+            plugin.getEffectBoosterListener().applyEffectToAll(type);
+        } else if (type == BoosterType.FLY) {
+            plugin.getFlyBoosterListener().enableFlyForAll();
+        }
+
+        announceBoosterActivation(type, activatorName, durationMinutes, false);
+        playGlobalSound(Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.5f);
+
+        return true;
+    }
+
+    public boolean deactivateBooster(BoosterType type) {
         ActiveBooster booster = activeBoosters.remove(type);
         if (booster != null) {
             plugin.getBossBarManager().removeBossBar(type);
@@ -124,7 +153,9 @@ public class BoosterManager {
 
             announceBoosterDeactivation(type);
             playGlobalSound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 0.5f);
+            return true;
         }
+        return false;
     }
 
     public void tickAllBoosters() {

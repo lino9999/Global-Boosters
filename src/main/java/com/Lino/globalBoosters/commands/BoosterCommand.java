@@ -43,6 +43,10 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
         switch (subCommand) {
             case "give":
                 return handleGive(sender, args);
+            case "start":
+                return handleStart(sender, args);
+            case "stop":
+                return handleStop(sender, args);
             case "reload":
                 return handleReload(sender);
             case "stats":
@@ -124,6 +128,76 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.gave-booster", placeholders));
         target.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.received-booster", placeholders));
+
+        return true;
+    }
+
+    private boolean handleStart(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("globalboosters.admin")) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
+            return true;
+        }
+
+        if (args.length < 3) {
+            sender.sendMessage(GradientColor.apply("<gradient:#FF0000:#FF6B6B>Usage: /booster start <type> <duration> [activator]</gradient>"));
+            return true;
+        }
+
+        BoosterType type;
+        try {
+            type = BoosterType.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.invalid-booster"));
+            return true;
+        }
+
+        int duration;
+        try {
+            duration = Integer.parseInt(args[2]);
+            if (duration <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.invalid-duration"));
+            return true;
+        }
+
+        String activatorName = "Console";
+        if (args.length >= 4) {
+            activatorName = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
+        }
+
+        if (plugin.getBoosterManager().activateConsoleBooster(type, activatorName, duration)) {
+            sender.sendMessage(GradientColor.apply("<gradient:#00FF00:#32CD32>Successfully started booster " + type.name() + "</gradient>"));
+        } else {
+            sender.sendMessage(GradientColor.apply("<gradient:#FF0000:#FF6B6B>Failed to start booster (Active or Max Limit)</gradient>"));
+        }
+
+        return true;
+    }
+
+    private boolean handleStop(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("globalboosters.admin")) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("general.no-permission"));
+            return true;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(GradientColor.apply("<gradient:#FF0000:#FF6B6B>Usage: /booster stop <type></gradient>"));
+            return true;
+        }
+
+        BoosterType type;
+        try {
+            type = BoosterType.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            sender.sendMessage(plugin.getMessagesManager().getMessage("commands.booster.invalid-booster"));
+            return true;
+        }
+
+        if (plugin.getBoosterManager().deactivateBooster(type)) {
+            sender.sendMessage(GradientColor.apply("<gradient:#00FF00:#32CD32>Successfully stopped booster " + type.name() + "</gradient>"));
+        } else {
+            sender.sendMessage(GradientColor.apply("<gradient:#FF0000:#FF6B6B>Booster " + type.name() + " is not active!</gradient>"));
+        }
 
         return true;
     }
@@ -354,6 +428,10 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
             if (sender.hasPermission("globalboosters.admin.give")) {
                 subCommands.add("give");
             }
+            if (sender.hasPermission("globalboosters.admin")) {
+                subCommands.add("start");
+                subCommands.add("stop");
+            }
             if (sender.hasPermission("globalboosters.admin.reload")) {
                 subCommands.add("reload");
             }
@@ -373,19 +451,41 @@ public class BoosterCommand implements CommandExecutor, TabCompleter {
                         .map(Player::getName)
                         .collect(Collectors.toList()), args[1]);
             } else if (args.length == 3) {
-                List<String> enabledBoosters = new ArrayList<>();
-                for (BoosterType type : BoosterType.values()) {
-                    if (plugin.getConfigManager().isBoosterEnabled(type)) {
-                        enabledBoosters.add(type.name().toLowerCase());
-                    }
-                }
-                return filterStartingWith(enabledBoosters, args[2]);
+                return getEnabledBoosters(args[2]);
             } else if (args.length == 4) {
                 return Arrays.asList("30", "60", "120");
             }
         }
 
+        if (args[0].equalsIgnoreCase("start") && sender.hasPermission("globalboosters.admin")) {
+            if (args.length == 2) {
+                return getEnabledBoosters(args[1]);
+            } else if (args.length == 3) {
+                return Arrays.asList("30", "60", "120");
+            } else if (args.length == 4) {
+                return Collections.singletonList("Console");
+            }
+        }
+
+        if (args[0].equalsIgnoreCase("stop") && sender.hasPermission("globalboosters.admin")) {
+            if (args.length == 2) {
+                return filterStartingWith(plugin.getBoosterManager().getActiveBoosters().stream()
+                        .map(b -> b.getType().name().toLowerCase())
+                        .collect(Collectors.toList()), args[1]);
+            }
+        }
+
         return new ArrayList<>();
+    }
+
+    private List<String> getEnabledBoosters(String prefix) {
+        List<String> enabledBoosters = new ArrayList<>();
+        for (BoosterType type : BoosterType.values()) {
+            if (plugin.getConfigManager().isBoosterEnabled(type)) {
+                enabledBoosters.add(type.name().toLowerCase());
+            }
+        }
+        return filterStartingWith(enabledBoosters, prefix);
     }
 
     private List<String> filterStartingWith(List<String> list, String prefix) {

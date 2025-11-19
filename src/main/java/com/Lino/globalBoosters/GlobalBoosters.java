@@ -45,10 +45,16 @@ public class GlobalBoosters extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        if (!setupEconomy()) {
-            getLogger().severe("Vault dependency not found! Disabling plugin...");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+        // Load config first to check if we need Vault
+        configManager = new ConfigManager(this);
+
+        // Only check for Vault if the shop GUI is enabled
+        if (configManager.isShopGuiEnabled()) {
+            if (!setupEconomy()) {
+                getLogger().severe("Vault dependency not found! Disabling plugin...");
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
         }
 
         initializeManagers();
@@ -128,6 +134,7 @@ public class GlobalBoosters extends JavaPlugin {
     }
 
     private void initializeManagers() {
+        // configManager is initialized in onEnable but re-initializing here ensures reload safety
         configManager = new ConfigManager(this);
         messagesManager = new MessagesManager(this);
         dataManager = new DataManager(this);
