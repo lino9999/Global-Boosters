@@ -59,6 +59,7 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+
     </repositories>
 
     <dependencies>
@@ -74,5 +75,6 @@
             <version>1.7</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 </project>

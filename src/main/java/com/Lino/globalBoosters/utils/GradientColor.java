@@ -1,5 +1,6 @@
 package com.Lino.globalBoosters.utils;
 
+import org.bukkit.ChatColor;
 import java.awt.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +12,8 @@ public class GradientColor {
     public static String apply(String text) {
         if (text == null) return "";
 
+        text = ChatColor.translateAlternateColorCodes('&', text);
+
         Matcher matcher = GRADIENT_PATTERN.matcher(text);
         StringBuffer result = new StringBuffer();
 
@@ -19,7 +22,10 @@ public class GradientColor {
             String endColor = matcher.group(2);
             String content = matcher.group(3);
 
-            String gradientText = createGradient(content, startColor, endColor);
+            boolean bold = content.contains("§l");
+            String strippedContent = ChatColor.stripColor(content);
+
+            String gradientText = createGradient(strippedContent, startColor, endColor, bold);
             matcher.appendReplacement(result, Matcher.quoteReplacement(gradientText));
         }
 
@@ -27,7 +33,7 @@ public class GradientColor {
         return result.toString();
     }
 
-    private static String createGradient(String text, String startHex, String endHex) {
+    private static String createGradient(String text, String startHex, String endHex, boolean bold) {
         Color startColor = hexToColor(startHex);
         Color endColor = hexToColor(endHex);
 
@@ -46,7 +52,11 @@ public class GradientColor {
             Color interpolated = interpolateColor(startColor, endColor, percent);
             String hex = colorToHex(interpolated);
 
-            gradientText.append(hexToMinecraftColor(hex)).append(c);
+            gradientText.append(hexToMinecraftColor(hex));
+            if (bold) {
+                gradientText.append("§l");
+            }
+            gradientText.append(c);
         }
 
         return gradientText.toString();
